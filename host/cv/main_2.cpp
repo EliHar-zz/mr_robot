@@ -138,7 +138,7 @@ void control(int left, int right) {
 
 	stringstream ss;
 	ss << "/root/mr_robot/tools/control/write " << left << "," << right << "#" << endl;
-	cout << left << ", " << right << "#" << endl;
+	cout << left << "," << right << "#" << endl;
 	system(ss.str().c_str());
 }
 
@@ -152,41 +152,42 @@ void control(int left, int right) {
 **/
 void drive(double angle, double distance, double diameter) {
 
-	int full_speed = 225;
-	int rotation_speed = 100;
-	int turn_speed = 50;
-	int stopping_distance = 70;
-	int stop_angle = 12;
+	int full_speed = 255;
+	int rotation_speed = 145;
+	int turn_speed = 40;
+	int stopping_distance = 45;
+	int stop_angle = 4;
 
  	// If no object found: rotate
  	if(diameter == 0 && direction != ROTATE) {
-		direction = ROTATE;
 		cout << endl << "rotating ";
 		control(rotation_speed, -rotation_speed);
+		direction = ROTATE;
 
  	// If object is within stopping_distance and visible: stop
  	} else if(distance <= stopping_distance && diameter > 0 && direction != STOP) {
-		direction = STOP;
 		cout << endl << "stopping "; 
 		control(0, 0);
+		direction = STOP;
 
  	// If object more than stop_angle degrees to right and farther than stopping distance: turn right
  	} else if (angle > stop_angle && distance >= stopping_distance && direction != RIGHT){
-		direction = RIGHT;
 		cout << endl << "turning right ";
 		control(turn_speed, -turn_speed);
+		direction = RIGHT;
+		
 
  	// If object more than stop_angle degrees to left and farther than stopping distance: turn left
  	} else if (angle < -stop_angle && distance >= stopping_distance && direction != LEFT) {
-		direction = LEFT;
 		cout << endl << "turning left ";
 		control (-turn_speed, turn_speed);
+		direction = LEFT;
 
  	// If ball is past stopping distance and within stop_angles: forward
  	} else if (distance > stopping_distance && angle < stop_angle && angle > -stop_angle && direction != FORWARD) {
-		direction = FORWARD;
 		cout << endl << "going forward ";
 		control(full_speed, full_speed);
+		direction = FORWARD;
  	}
 
 }
