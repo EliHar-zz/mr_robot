@@ -38,6 +38,8 @@
 #include <cstdlib>
 #include <sstream>
 #include <stdio.h>
+#include <ctime>
+#include <unistd.h>
 
 #define PI 3.14159265
 
@@ -52,13 +54,15 @@ long frameNumber = 0;
 // (Please refer to the documentation for more information about the GUI code)
 
 int direction = 0;
+clock_t start_time;
 
 const int FORWARD = 1;
 const int REVERSE = 2;
 const int RIGHT = 3;
 const int LEFT = 4;
 const int ROTATE = 5;
-const int STOP = 6;
+const int PAUSE = 6;
+const int STOP = 7;
 
 /**
 * Get the distance between the object and the camera
@@ -134,7 +138,7 @@ void get_color_specs(vector<vector<int> > &specs, string color){
 	}
 }
 
-void control(int left, int right) {
+void drive(int left, int right) {
 
 	stringstream ss;
 	ss << "/root/mr_robot/tools/control/write " << left << "," << right << "#" << endl;
@@ -148,48 +152,71 @@ void control(int left, int right) {
 * @param angle Car angel
 * @param distance Distance of the car from the camera
 * @param diameter Digital diameter of the circular object
+* @param loop_count Necessary to keep from writing to Atmega328p faster than it can read messages
 * @return Direction code
 **/
-void drive(double angle, double distance, double diameter) {
+void find_ball(double angle, double distance, double diameter, int &loop_count) {
 
 	int full_speed = 255;
-	int rotation_speed = 145;
+	int rotation_speed = 140;
 	int turn_speed = 40;
-	int stopping_distance = 45;
-	int stop_angle = 4;
+	int pausing_distance = 45;
+	int target_angle = 4;
 
- 	// If no object found: rotate
- 	if(diameter == 0 && direction != ROTATE) {
-		cout << endl << "rotating ";
-		control(rotation_speed, -rotation_speed);
-		direction = ROTATE;
+	if (loop_count > 1) { 
 
- 	// If object is within stopping_distance and visible: stop
- 	} else if(distance <= stopping_distance && diameter > 0 && direction != STOP) {
-		cout << endl << "stopping "; 
-		control(0, 0);
-		direction = STOP;
+		// If no object found: rotate
+		if(diameter == 0 && direction != ROTATE) {
+			cout << endl << "rotating ";
+			drive(rotation_speed, -rotation_speed);
+			direction = ROTATE;
+			loop_count = 0;
 
- 	// If object more than stop_angle degrees to right and farther than stopping distance: turn right
- 	} else if (angle > stop_angle && distance >= stopping_distance && direction != RIGHT){
-		cout << endl << "turning right ";
-		control(turn_speed, -turn_speed);
-		direction = RIGHT;
-		
+			start_time = clock();
 
- 	// If object more than stop_angle degrees to left and farther than stopping distance: turn left
- 	} else if (angle < -stop_angle && distance >= stopping_distance && direction != LEFT) {
-		cout << endl << "turning left ";
-		control (-turn_speed, turn_speed);
-		direction = LEFT;
+		// If object is within pausing_distance and visible: pause
+		} else if(distance <= pausing_distance && diameter > 0 && direction != PAUSE) {
+			cout << endl << "pausing "; 
+			drive(0, 0);
+			direction = PAUSE;
+			loop_count = 0;
 
- 	// If ball is past stopping distance and within stop_angles: forward
- 	} else if (distance > stopping_distance && angle < stop_angle && angle > -stop_angle && direction != FORWARD) {
-		cout << endl << "going forward ";
-		control(full_speed, full_speed);
-		direction = FORWARD;
- 	}
+			cout << "\n**** BALL FOUND ****\n" << endl;
 
+		// If object more than target_angle degrees to right and farther than pausing distance: turn right
+		} else if (angle > target_angle && distance >= pausing_distance && direction != RIGHT){
+			cout << endl << "turning right ";
+			drive(turn_speed, -turn_speed);
+			direction = RIGHT;
+			loop_count = 0;
+
+		// If object more than target_angle degrees to left and farther than pausing distance: turn left
+		} else if (angle < -target_angle && distance >= pausing_distance && direction != LEFT) {
+			cout << endl << "turning left ";
+			drive(-turn_speed, turn_speed);
+			direction = LEFT;
+			loop_count = 0;
+
+		// If ball is past pausing distance and within target_angle: forward
+		} else if (distance > pausing_distance && angle < target_angle && angle > -target_angle && direction != FORWARD) {
+			cout << endl << "going forward ";
+			drive(full_speed, full_speed);
+			direction = FORWARD;
+			loop_count = 0;
+
+		// If ball rotates ~360 degrees and doesn't see ball: stop
+		} else if (direction == ROTATE) {
+			clock_t rotation_duration = (clock() - start_time) / (double)(CLOCKS_PER_SEC);
+			cout << "\trot time: " << rotation_duration << " s" << endl;
+			if (rotation_duration > 12) {
+				drive(0, 0);
+				cout << "\n**** BALL NOT FOUND ****\n" << endl;
+				direction = STOP;
+			}
+		}
+	}
+
+	loop_count++;
 }
 
 /**
@@ -212,6 +239,13 @@ int main( int argc, char** argv ) {
 	cap.set(CV_CAP_PROP_FRAME_WIDTH, 432);
 	cap.set(CV_CAP_PROP_FRAME_HEIGHT,240);
 	cap.set(CV_CAP_PROP_FPS , 30);
+
+	// loop_count is used to make sure that the find_ball function has looped at least twice
+	// before sending a message to the Atmega328p. This was created in response to a bug found
+	// when writing too fast to the Atmega328p. The direction variable would be modified however 
+	// the write message wouldn't be interpreted. This causes the car to get stuck in a
+	// certain direction. Initialized to 2 so that the car begins moving immediately
+	int loop_count = 2;
 
 	// Keep taking pictures
 	while(1) {
@@ -298,9 +332,9 @@ int main( int argc, char** argv ) {
 		// Center
 		circle(tmpSource, Point(x_center,y_center), 2, Scalar(255, 255, 255), 2);
 
-		// Get direction code
-		drive(rotation_angle, distance, diameter);
-
+		// Logic to navigate to ball
+		find_ball(rotation_angle, distance, diameter, loop_count);
+		
 		// Write images and text into the file system/
 		// Director /var/www/html correspond to the path for
 		// Apache2 server. All files placed in this directory will be 
@@ -331,12 +365,21 @@ int main( int argc, char** argv ) {
 			case ROTATE:
 				myfile << dir_message << "Rotating" << endl;
 				break;
+			case PAUSE:
+				myfile << dir_message << "Pause" << endl;
+				break;
 			case STOP:
 				myfile << dir_message << "Stop" << endl;
 				break;
 		}
 		myfile << "DIR_CODE: " << direction << "\n";
 		myfile.close();
+
+		if (direction == STOP) {
+			return 0;
+		}
+
 	}
+
 	return 0;
 }
