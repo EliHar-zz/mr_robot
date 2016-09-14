@@ -67,16 +67,16 @@ echo
 
 confirm "Install OpenCV ?" &&
 cd /tmp &&
-#sudo apt-get install cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev -y &&
-#sudo apt-get install python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev -y &&
-#wget "https://github.com/opencv/opencv_contrib/archive/3.1.0.zip" -O opencv_contrib.zip &&
-#unzip opencv_contrib.zip &&
-#rm opencv_contrib.zip &&
-#mv opencv_contrib* contrib &&
-#wget "https://github.com/Itseez/opencv/archive/3.1.0.zip" -O opencv.zip &&
-#unzip opencv.zip &&
-#rm opencv.zip &&
-#mv opencv* opencv &&
+sudo apt-get install cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev -y &&
+sudo apt-get install python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev -y &&
+wget "https://github.com/opencv/opencv_contrib/archive/3.1.0.zip" -O opencv_contrib.zip &&
+unzip opencv_contrib.zip &&
+rm opencv_contrib.zip &&
+mv opencv_contrib* contrib &&
+wget "https://github.com/Itseez/opencv/archive/3.1.0.zip" -O opencv.zip &&
+unzip opencv.zip &&
+rm opencv.zip &&
+mv opencv* opencv &&
 cp "$REPO_PATH/tools/vm/install-opencv.sh" . &&
 ./install-opencv.sh &&
 rm -rf /tmp/opencv* &&
