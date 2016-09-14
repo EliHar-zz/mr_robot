@@ -26,7 +26,7 @@ cmake -D CMAKE_BUILD_TYPE=Release -D RUNTIME_OUTPUT_DIRECTORY=$BUILD_DIR -D CMAK
 
 # Make
 echo "Calling make (Takes few minutes to finish)"
-make
+make -j$(nproc)
 
 # Install
 echo "Installing libraries on the machines (Requires root permission)"
