@@ -17,8 +17,8 @@
 
   * Go to the repository directory and run `vagrant up`
   * After the VM starts, run the following:  
-    ```
-    cd tools/vm/
-    ./new-vm.sh
-    ```
-    
+```
+cd tools/vm/
+./new-vm.sh
+```
+   
