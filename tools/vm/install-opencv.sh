@@ -2,7 +2,7 @@
 # This file is used by new-vm.sh and expects some
 # files to be placed in specific directories on the VM
 # 
-# NODE: Don't execute this file manually
+# NOTE: Don't execute this file manually
 #######################################################
 
 # Variables
