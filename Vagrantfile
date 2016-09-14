@@ -17,8 +17,4 @@ Vagrant.configure(2) do |config|
     config.vm.provision "shell", inline: <<-SHELL
         sudo apt-get update
     SHELL
-
-    config.push.define "atlas" do |push|
-        push.app = "amirbawab/mr_robot"
-    end
 end
