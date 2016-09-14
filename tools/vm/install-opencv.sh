@@ -1,3 +1,10 @@
+#######################################################
+# This file is used by new-vm.sh and expects some
+# files to be placed in specific directories on the VM
+# 
+# NODE: Don't execute this file manually
+#######################################################
+
 # Variables
 SHELL_FILE_PATH=$(dirname $0)
 OPENCV_DIR="opencv"

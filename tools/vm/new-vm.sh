@@ -1,5 +1,11 @@
 #!/bin/bash
 
+#########################################
+# Install tools on a new VM
+# Example of usage:
+#   ./new-vm.sh
+#########################################
+
 # Variables
 VM_USER="vagrant"
 REPO_PATH="/home/$VM_USER/mr_robot"
