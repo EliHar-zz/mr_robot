@@ -28,6 +28,10 @@ confirm  "Install curl ?" &&
 sudo apt-get install curl -y &&
 echo 
 
+confirm "Install vim ?" &&
+sudo apt-get install vim -y &&
+echo
+
 confirm "Install Git ?" &&
 sudo apt-get install git -y &&
 echo
