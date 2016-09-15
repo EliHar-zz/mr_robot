@@ -4,6 +4,7 @@
 
   * [Install Virtual Machine](#install-virtual-machine)
   * [Start Virtual Machine](#start-virtual-machine)
+  * [Import C++ into Eclipse](#)
 
 ### Install Virtual Machine
 
@@ -21,4 +22,6 @@
 cd tools/vm/
 ./new-vm.sh
 ```
-   
+
+### Import C++ into Eclipse
+From the VM, open eclipse and import project at directory: `cv`
