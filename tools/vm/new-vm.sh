@@ -41,6 +41,7 @@ cd "/home/$VM_USER/" &&
 wget "http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/helios/SR2/eclipse-cpp-helios-SR2-linux-gtk-x86_64.tar.gz" -O "eclipse.tar.gz" &&
 sudo tar -xvf eclipse.tar.gz &&
 sudo rm *.tar.gz &&
+sudo chown vagrant:vagrant eclipse* -R &&
 echo
 
 confirm "Install Java JDK 7 ?" &&
