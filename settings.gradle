@@ -1,2 +1,4 @@
 rootProject.name = 'mr_robot'
 include ':tools:socket'
+include ':tools:utils'
+include ':tools:protocol'
