@@ -27,9 +27,11 @@ public class TCPServerConnection implements Runnable {
     private boolean closeConnection = false;
     private ServerSocket serverSocket;
     private Socket clientSocket;
+    private String name;
 
-    public TCPServerConnection(int port) {
+    public TCPServerConnection(String name, int port) {
         this.port = port;
+        this.name = name;
         tcpSender = new TCPSender();
         tcpReceiver = new TCPReceiver();
         tcpPing = new TCPPing(tcpSender);
@@ -90,17 +92,17 @@ public class TCPServerConnection implements Runnable {
 
             // Start TCP Sender
             Thread sendThread = new Thread(tcpSender);
-            sendThread.setName("S-Sender");
+            sendThread.setName(name + "-Server-Sender");
             sendThread.start();
 
             // Start TCP Receiver
             Thread receiveThread = new Thread(tcpReceiver);
-            receiveThread.setName("S-Receiver");
+            receiveThread.setName(name + "-Server-Receiver");
             receiveThread.start();
 
             // Start pinging the client
             Thread pingThread = new Thread(tcpPing);
-            pingThread.setName("S-Ping");
+            pingThread.setName(name + "-Server-Ping");
             pingThread.start();
 
             // Join threads before accepting another client
