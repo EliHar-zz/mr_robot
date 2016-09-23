@@ -129,5 +129,8 @@ gradle-app.setting
 ### Vagrant ###
 .vagrant/
 
+### Mac ###
+.DS_Store
+
 # Extra
 .idea/
