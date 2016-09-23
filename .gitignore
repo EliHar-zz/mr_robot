@@ -134,3 +134,4 @@ gradle-app.setting
 
 # Extra
 .idea/
+logs/
