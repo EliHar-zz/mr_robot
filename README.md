@@ -29,7 +29,7 @@ From the VM, open eclipse and import project at directory: `cv`
 
 ### Architecture
 
-#### Overall architecture:
+#### Overall architecture
 
 <img src="https://raw.githubusercontent.com/EliHar/mr_robot/master/tools/docs/architecture.png"/>
 
