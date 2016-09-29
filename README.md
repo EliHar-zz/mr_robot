@@ -5,6 +5,7 @@
   * [Install Virtual Machine](#install-virtual-machine)
   * [Start Virtual Machine](#start-virtual-machine)
   * [Import C++ into Eclipse](#import-c-into-eclipse)
+  * [Architecture](#architecture)
 
 ### Install Virtual Machine
 
@@ -25,3 +26,7 @@ cd tools/vm/
 
 ### Import C++ into Eclipse
 From the VM, open eclipse and import project at directory: `cv`
+
+### Architecture
+
+<img src="https://raw.githubusercontent.com/EliHar/mr_robot/master/tools/docs/architecture.png"/>
