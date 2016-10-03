@@ -325,7 +325,6 @@ void usb_init(void)
 	usb_configuration = 0;
 	cdc_line_rtsdtr = 0;
         UDIEN = (1<<EORSTE)|(1<<SOFE);
-	sei();
 }
 
 // return 0 if the USB is not configured, or the configuration

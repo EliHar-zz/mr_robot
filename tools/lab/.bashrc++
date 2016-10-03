@@ -15,7 +15,7 @@ Generated files:
 EOF
     else
         echo "Running avr-gcc ..."
-        avr-gcc -mmcu=at90usb1286 -O -o "$1.o" ${@:2}
+        avr-gcc -std=c11 -mmcu=at90usb1286 -O -o "$1.o" ${@:2}
 
         echo "Running avr-objcopy ..."
         avr-objcopy -O ihex "$1.o" "$1.hex"
@@ -24,3 +24,5 @@ EOF
 
 alias arduino="/home/soen422/arduino-1.0.6/arduino &"
 alias teensy="/home/soen422/Desktop/teensy &"
+
+export PATH="$PATH:/usr/local/bin"
