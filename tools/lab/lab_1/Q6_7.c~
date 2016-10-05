@@ -54,7 +54,7 @@ void loop() {
 		usb_serial_write(adc_result_str, 6);
 
 		// We noticed that the result of adc acted like a parabolic function. If it received 
-		// no input the value was around 0. If we started moving our hands towards the IR 
+		// no input the value was around 60. If we started moving our hands towards the IR 
 		// sensor from far away, the value being printed was increasing. It seemed to reach
  		// its max value at 15 cm away from the sensor. If we moved our hand closer than 
 		// 15 cm the value began to decrease. The maximum value we received was slightly over
