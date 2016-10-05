@@ -1,5 +1,5 @@
 /*
- * Questions 3: Output the value of the LED brightness to the serial monitor
+ * Questions 4: Output the value of the LED brightness to the serial monitor
  */
 
 #ifndef F_CPU
