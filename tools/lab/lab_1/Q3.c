@@ -1,42 +1,32 @@
 #ifndef F_CPU
 #define F_CPU 16000000
 #endif
-
 #include <avr/interrupt.h>
 #include <avr/io.h>
-#include <util/delay.h>
 #include "usb_serial.h"
 
-ISR(TIMER0_OVF_vect) {
-	unsigned char greeting[] = "Hello Teensy\r\n";
-	usb_serial_write(greeting, 14);
+ISR(TIMER0_COMPA_vect) // Interrupt Service Routine
+{
+	PORTB ^= (1 << PB7); // Use xor to toggle the LED
+	usb_serial_write("Hello Teensy\r\n",14);
 }
+void setupt()
+{
+	cli(); // Disable global interrupts
+	TCCR0B |= ((1 << CS02) | (1 << CS00)); // Timer 0 prescaling 1024
+	TCCR0A |= (1 << WGM01); // Put timer 0 in CTC mode
+	OCR0A = 255; // Count 255 cycles for interrupt
+	TIMSK0 |= (1 << OCIE0A); // enable timer compare interrupt
 
-void setup() {
-	DDRB = (1 << PB7);
-
-	TCCR0A = (1 << WGM00) | (1 << WGM01) | (1 << COM0A1);
-	TCCR0B = (1 << CS00) | (1 << CS01);
-
-	TIMSK0 |= (1 << TOIE0);
-
+	DDRB |= (1 << PB7); // Set PortB Pin7 as an output
+	PORTB |= (1 << PB7); // Set PortB Pin7 high to turn on LED
 	usb_init();
-	sei();
-	OCR0A = 0;
+	sei(); // Enable global interrupts
 }
-
-void loop() {
-	while(1) {
-		_delay_ms(50);
-		PORTB |= (1 << PB7);
-		OCR0A += 15;
-		PORTB &= ~(1 << PB7);
-	}
-}
-
-int main() {
-
+int main()
+{
 	setup();
-	loop();
-	return 0;
+	while(1) { } // Don't do anything
 }
+
+
