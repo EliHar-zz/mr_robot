@@ -1,5 +1,5 @@
-// Our INT0 interrupt will start/stop the clock from running
-// If the clock is on, our LED connected to PB1 will blink every 8 block cycles
+// Our INT0 interrupt will start or stop the timer
+// If the timer is on, our LED connected to PB1 will blink when timer counter overflows
 
 #define F_CPU 555555UL
 
@@ -9,9 +9,9 @@
 
 bool clock_on = true;
 
-// this will set up an asynchronous interrupt such that
-// if there is a change in input to the INT0 pin, it will call the ISR(INT0_vect) function
-void initialize_int0() {
+// This will set up an asynchronous interrupt such that
+// if there is a change of input to the INT0 pin, it will call the ISR(INT0_vect) function
+void initialize_INT0() {
     cli();
 
     EICRA |= ((0 << ISC01) | (1 << ISC00));
@@ -20,20 +20,20 @@ void initialize_int0() {
     sei();
 }
 
-// starts our clock
-void start_clock() {
+// Starts our timer
+void start_timer() {
     cli();
 
     TIMSK1 = (1 << TOIE1);
-    TCCR1B |= ((0 << CS12) | (1 << CS11) | (0 << CS10));
+    TCCR1B |= ((0 << CS12) | (1 << CS11) | (0 << CS10)); // counter increments every 8 clock cycles
 
     clock_on = true;
 
     sei();
 }
 
-// stops our clock from running and resets it to 0
-void stop_clock() {
+// Stops our timer from running and resets counter to 0
+void stop_timer() {
     cli();
 
     TCCR1B &= ((0 << CS12) | (0 << CS11) | (0 << CS10));
@@ -43,20 +43,20 @@ void stop_clock() {
     sei();
 }
 
-// this interrupt will be called if INT0's input value changes
+// This interrupt will be called if INT0's input value changes
 ISR(INT0_vect) {
     cli();
 
     if (clock_on) {
-        stop_clock();
+        stop_timer();
     } else {
-        start_clock();
+        start_timer();
     }
 
     sei();
 }
 
-// if clock is running, this will be called when the clock overflows
+// If timer is running, this will be called when the timer counter overflows
 ISR(TIMER1_OVF_vect) {
     cli();
     PORTB ^= (1 << PB1); // toggle LED
@@ -64,13 +64,12 @@ ISR(TIMER1_OVF_vect) {
 }
 
 void setup() {
-    DDRB |= (1 << PB1); // set PB1 as output pin
+    DDRB |= (1 << PB1); // set PB1 as output pin for LED
+    initialize_INT0(); // turn on INT0 interrupt
 }
 
 int main(void) {
-    DDRB |= (1 << PB1); // set PB1 as our output pin
-
-    initialize_int0();
+    setup();
 
     for(;;) {
 
