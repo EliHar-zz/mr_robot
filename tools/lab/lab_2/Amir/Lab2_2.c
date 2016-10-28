@@ -4,7 +4,7 @@
 int externalTimer = 0;
 int INT_EVERY = 5; // 5 seconds
 
-// INT0 handler
+// Timer handler
 ISR(TIMER0_COMPA_vect) {
 
 	// Disable interrupts
