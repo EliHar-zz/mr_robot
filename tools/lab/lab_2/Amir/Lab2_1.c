@@ -7,8 +7,8 @@ int isOn = 1;
 // INT0 handler
 ISR(INT0_vect) {
 
-	// Disable interrupts
-	cli();
+    // Disable interrupts
+    cli();
 
     // Toggle LED status
     isOn = 1 - isOn;
@@ -30,17 +30,17 @@ ISR(INT0_vect) {
 
 void setup() {
 
-	// LED on pin PB1
+    // LED on pin PB1
     DDRB |= (1 << PB1);
 
     // Any logical change on INT0 generates an interrupt request
     EICRA |= (1 << ISC01);
 
-	// Turn on INT0
-	EIMSK |= (1 << INT0);
+    // Turn on INT0
+    EIMSK |= (1 << INT0);
 
-	// Enable global interrupts
-	sei();
+    // Enable global interrupts
+    sei();
 }
 
 int main(void) {
