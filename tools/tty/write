@@ -1,0 +1,24 @@
+write() {
+    if [[ ${#@} < 2 ]]
+    then
+        cat<<EOF
+Write to Serial communication.
+
+Usage: 
+    write ttyUSB0 "Message 1"
+    write ttyUSB1 "Message 2"
+    etc ...
+EOF
+    else
+        if [[ ! -e /dev/$1 ]]
+        then
+             echo "$1 not found! Here's the list of ttyUSB found:"
+             ls /dev/ | grep ttyUSB | xargs -I {} echo "    - {}"
+        else
+            sudo chmod o+rw /dev/$1
+            echo -e -n "$2"  > /dev/$1
+        fi
+    fi
+}
+
+write $1 $2

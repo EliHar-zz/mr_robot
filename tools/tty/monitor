@@ -10,7 +10,7 @@ Usage:
     etc ...
 EOF
     else
-        if [[ ! -f /dev/$1 ]]
+        if [[ ! -e /dev/$1 ]]
         then
             echo "$1 not found! Here's the list of ttyUSB found:"
             ls /dev/ | grep ttyUSB | xargs -I {} echo "    - {}"
