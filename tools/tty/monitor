@@ -1,0 +1,24 @@
+monitor() {
+    if [[ ${#@} < 2 ]]
+    then
+        cat<<EOF
+Monitor Serial communication.
+
+Usage: 
+    monitor ttyUSB0 4800
+    monitor ttyUSB1 2400
+    etc ...
+EOF
+    else
+        if [[ ! -f /dev/$1 ]]
+        then
+            echo "$1 not found! Here's the list of ttyUSB found:"
+            ls /dev/ | grep ttyUSB | xargs -I {} echo "    - {}"
+        else
+            sudo chmod o+rw /dev/$1
+            stty -F /dev/$1 $2 raw -echo -echoe -echok -echoctl -echoke && cat -v < /dev/$1
+        fi
+    fi
+}
+
+monitor $1 $2
