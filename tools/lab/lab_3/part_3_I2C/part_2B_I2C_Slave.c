@@ -9,19 +9,33 @@
 
 #define ERROR 0
 #define SUCCESS 1
-#define EEDEVADR 0b10100000
+#define EEDEVADR 0xCD
 
-uint16_t Master_addr = 0x07F1;
-uint8_t u8ebyte;
+uint16_t Master_addr = 0xCD;
 
-/*
- * USART METHODS
- */
-char receiveChar() {
-	// Wait until data is received
-	while (!(UCSR0A & (1 << RXC0))) {}
-	// Return the data from the RX buffer
-	return UDR0;
+
+// ################################
+// ##  HELPERS
+// ################################
+//Converts integer to String (char*)
+char* itoa(int i, char b[]){
+	char const digit[] = "0123456789";
+	char* p = b;
+	if(i<0){
+		*p++ = '-';
+		i *= -1;
+	}
+	int shifter = i;
+	do{ //Move to where representation ends
+		++p;
+		shifter = shifter/10;
+	}while(shifter);
+	*p = '\0';
+	do{ //Move back, inserting digits as u go
+		*--p = digit[i%10];
+		i = i/10;
+	}while(i);
+	return b;
 }
 
 void sendChar(char c) {
@@ -35,6 +49,22 @@ void sendMessage(char msg[]) {
 	for (int i = 0; msg[i]; i++) {
 		sendChar(msg[i]);
 	}
+}
+
+void sendInteger(uint8_t value) {
+	char c[4];
+	itoa(value,c);
+	sendMessage(c);
+}
+
+/*
+ * USART METHODS
+ */
+char receiveChar() {
+	// Wait until data is received
+	while (!(UCSR0A & (1 << RXC0))) {}
+	// Return the data from the RX buffer
+	return UDR0;
 }
 
 void USART_Init() {
@@ -88,22 +118,28 @@ uint8_t TWIGetStatus(void)
 	uint8_t status;
 	//mask status
 	status = TWSR & 0xF8;
+	sendInteger(status);
 	return status;
 }
 
 uint8_t EEWriteByte(uint16_t u16addr, uint8_t u8data)
 {
+	// TODO Check why this is not progressing from here
+	sendMessage("Hello world!");
 	while ((TWCR & (1<<TWINT)) == 0);
 	if (TWIGetStatus() != 0x08) // A START condition hasn't been transmitted
 		return ERROR;
+
 	//select device and send A2 A1 A0 address bits
 	TWIWrite((EEDEVADR)|(uint8_t)((u16addr & 0x0700)>>7));
 	if (TWIGetStatus() != 0x18)// if SLA+W not transmitted or status not ACK
 		return ERROR;
+
 	//send the rest of address
 	TWIWrite((uint8_t)(u16addr));
 	if (TWIGetStatus() != 0x28) // Addr nottransmitted or status not ACK
 		return ERROR;
+
 	//write byte to eeprom
 	TWIWrite(u8data);
 	if (TWIGetStatus() != 0x28)// Data byte not transmitted or status not ACK
@@ -111,16 +147,22 @@ uint8_t EEWriteByte(uint16_t u16addr, uint8_t u8data)
 	return SUCCESS;
 }
 
-/*
- * ADC METHODS
- */
 void ADC_Init() {
 	// initialize adc
 	ADMUX = (1 << REFS0);
 	ADCSRA = (1 << ADEN) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
 }
 
-// get value of adc
+void setup() {
+
+	// Setup connection to Serial monitor
+	USART_Init();
+	// Setup TWI
+	TWIInit();
+	// Init ADC
+	ADC_Init();
+}
+
 uint16_t read_adc(uint8_t ch) {
 	ch = ch&0b00000111;
 	ADMUX |= ch;
@@ -140,36 +182,6 @@ uint16_t read_adc(uint8_t ch) {
 	return (ADC);
 }
 
-//Converts integer to String (char*)
-char* itoa(int i, char b[]){
-	char const digit[] = "0123456789";
-	char* p = b;
-	if(i<0){
-		*p++ = '-';
-		i *= -1;
-	}
-	int shifter = i;
-	do{ //Move to where representation ends
-		++p;
-		shifter = shifter/10;
-	}while(shifter);
-	*p = '\0';
-	do{ //Move back, inserting digits as u go
-		*--p = digit[i%10];
-		i = i/10;
-	}while(i);
-	return b;
-}
-
-void setup() {
-	// Setup connection to Serial monitor
-	USART_Init();
-	// Setup TWI
-	TWIInit();
-	// Init ADC
-	ADC_Init();
-}
-
 void loop() {
 	uint16_t adc_result;
 	while(1) {
@@ -177,7 +189,9 @@ void loop() {
 		// convert value of ADC
 		char adc_result_str[] = "";
 		itoa(adc_result, adc_result_str);
-		strcat(adc_result_str, "\r\n");
+		strcat(adc_result_str, "\n");
+		sendMessage(adc_result_str);
+		sendMessage("\n");
 		// Send IR reading to Master
 		for (int i = 0; adc_result_str[i]; i++){
 			EEWriteByte(Master_addr, adc_result_str[i]);
@@ -185,8 +199,7 @@ void loop() {
 	}
 }
 
-int main (void)
-{
+int main( void ) {
 	setup();
 	loop();
 }
