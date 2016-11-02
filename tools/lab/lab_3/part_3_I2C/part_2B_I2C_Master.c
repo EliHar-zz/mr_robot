@@ -60,14 +60,17 @@ void TWIInit(void)
 
 void TWIStart(void)
 {
+	sendMessage("before_start\r\n");
 	TWCR = (1<<TWINT)|(1<<TWSTA)|(1<<TWEN);
 	while ((TWCR & (1<<TWINT)) == 0);
+	sendMessage("after_start\r\n");
 }
 //send stop signal
 void TWIStop(void)
 {
+	sendMessage("before_stop\r\n");
 	TWCR = (1<<TWINT)|(1<<TWSTO)|(1<<TWEN);
-	while (TWCR & (1<<TWSTO));
+	sendMessage("after_stop\r\n");
 
 }
 
@@ -108,7 +111,7 @@ uint8_t EEWriteByte(uint16_t u16addr, uint8_t u8data)
 	if (TWIGetStatus() != 0x08) // A START condition hasn't been transmitted
 		return ERROR;
 	//select device and send A2 A1 A0 address bits
-	TWIWrite((EEDEVADR)|(uint8_t)((u16addr & 0x0700)>>7));
+	TWIWrite((Slave_addr)|(uint8_t)((u16addr & 0x0700)>>7));
 	if (TWIGetStatus() != 0x18)// if SLA+W not transmitted or status not ACK
 		return ERROR;
 	//send the rest of address
@@ -130,7 +133,7 @@ uint8_t EEReadByte(uint16_t u16addr, uint8_t *u8data)
 	if (TWIGetStatus() != 0x08)
 		return ERROR;
 	//select devise and send A2 A1 A0 address bits
-	TWIWrite((EEDEVADR)|((uint8_t)((u16addr & 0x0700)>>7)));
+	TWIWrite((Slave_addr)|((uint8_t)((u16addr & 0x0700)>>7)));
 	if (TWIGetStatus() != 0x18) // if status not ACK
 		return ERROR;
 	//send the rest of address
@@ -142,7 +145,7 @@ uint8_t EEReadByte(uint16_t u16addr, uint8_t *u8data)
 	if (TWIGetStatus() != 0x10)// A repeated START condition hasn't been transmitted
 		return ERROR;
 	//select device and send read bit
-	TWIWrite((EEDEVADR)|((uint8_t)((u16addr & 0x0700)>>7))|1);
+	TWIWrite((Slave_addr)|((uint8_t)((u16addr & 0x0700)>>7))|1);
 	if (TWIGetStatus() != 0x40) //SLA+R hasn't been transmitted; ACK hasn't been received
 		return ERROR;
 	*u8data = TWIReadNACK();
@@ -150,6 +153,27 @@ uint8_t EEReadByte(uint16_t u16addr, uint8_t *u8data)
 		return ERROR;
 	TWIStop();
 	return SUCCESS;
+}
+
+//Converts integer to String (char*)
+char* itoa(int i, char b[]){
+	char const digit[] = "0123456789";
+	char* p = b;
+	if(i<0){
+		*p++ = '-';
+		i *= -1;
+	}
+	int shifter = i;
+	do{ //Move to where representation ends
+		++p;
+		shifter = shifter/10;
+	}while(shifter);
+	*p = '\0';
+	do{ //Move back, inserting digits as u go
+		*--p = digit[i%10];
+		i = i/10;
+	}while(i);
+	return b;
 }
 
 void setup() {
@@ -162,7 +186,10 @@ void setup() {
 void loop() {
 	uint8_t received_byte;
 	while(1) {
-		EEReadByte(Slave_addr, &received_byte);
+		int i = EEReadByte(Slave_addr, &received_byte);
+		char c[4];
+		itoa(i,c);
+		sendMessage(c);
 		sendChar(received_byte);
 	}
 }
