@@ -1,6 +1,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <compat/twi.h>
+#include <string.h>
 
 #define FOSC 1000000UL                       // Clock Speed
 #define USART_BAUDRATE 4800
@@ -8,18 +9,33 @@
 
 #define ERROR 0
 #define SUCCESS 1
-#define EEDEVADR 0b10100000
+#define EEDEVADR 0xCD
 
-uint16_t Slave_addr = 0x07F0;
+uint16_t Slave_addr = 0xCD;
 
-/*
- * USART METHODS
- */
-char receiveChar() {
-	// Wait until data is received
-	while (!(UCSR0A & (1 << RXC0))) {}
-	// Return the data from the RX buffer
-	return UDR0;
+
+// ################################
+// ##  HELPERS
+// ################################
+//Converts integer to String (char*)
+char* itoa(int i, char b[]){
+	char const digit[] = "0123456789";
+	char* p = b;
+	if(i<0){
+		*p++ = '-';
+		i *= -1;
+	}
+	int shifter = i;
+	do{ //Move to where representation ends
+		++p;
+		shifter = shifter/10;
+	}while(shifter);
+	*p = '\0';
+	do{ //Move back, inserting digits as u go
+		*--p = digit[i%10];
+		i = i/10;
+	}while(i);
+	return b;
 }
 
 void sendChar(char c) {
@@ -33,6 +49,22 @@ void sendMessage(char msg[]) {
 	for (int i = 0; msg[i]; i++) {
 		sendChar(msg[i]);
 	}
+}
+
+void sendInteger(uint8_t value) {
+	char c[4];
+	itoa(value,c);
+	sendMessage(c);
+}
+
+/*
+ * USART METHODS
+ */
+char receiveChar() {
+	// Wait until data is received
+	while (!(UCSR0A & (1 << RXC0))) {}
+	// Return the data from the RX buffer
+	return UDR0;
 }
 
 void USART_Init() {
@@ -102,6 +134,7 @@ uint8_t TWIGetStatus(void)
 	uint8_t status;
 	//mask status
 	status = TWSR & 0xF8;
+	sendInteger(status);
 	return status;
 }
 
@@ -128,52 +161,42 @@ uint8_t EEWriteByte(uint16_t u16addr, uint8_t u8data)
 
 uint8_t EEReadByte(uint16_t u16addr, uint8_t *u8data)
 {
+	sendMessage("**1**");
 	//uint8_t databyte;
 	TWIStart();
 	if (TWIGetStatus() != 0x08)
 		return ERROR;
+
+	sendMessage("**2**");
 	//select devise and send A2 A1 A0 address bits
 	TWIWrite((Slave_addr)|((uint8_t)((u16addr & 0x0700)>>7)));
 	if (TWIGetStatus() != 0x18) // if status not ACK
 		return ERROR;
+
+	sendMessage("**3**");
 	//send the rest of address
 	TWIWrite((uint8_t)(u16addr));
 	if (TWIGetStatus() != 0x28) // Data byte hasn't been transmitted; ACK hasn't been received
 		return ERROR;
 	//send start
+
+	sendMessage("**4**");
 	TWIStart();
 	if (TWIGetStatus() != 0x10)// A repeated START condition hasn't been transmitted
 		return ERROR;
+
+	sendMessage("**5**");
 	//select device and send read bit
 	TWIWrite((Slave_addr)|((uint8_t)((u16addr & 0x0700)>>7))|1);
 	if (TWIGetStatus() != 0x40) //SLA+R hasn't been transmitted; ACK hasn't been received
 		return ERROR;
+
+	sendMessage("**6**");
 	*u8data = TWIReadNACK();
 	if (TWIGetStatus() != 0x58) //Data byte hasn't been received; NOT ACK hasn't been returned
 		return ERROR;
 	TWIStop();
 	return SUCCESS;
-}
-
-//Converts integer to String (char*)
-char* itoa(int i, char b[]){
-	char const digit[] = "0123456789";
-	char* p = b;
-	if(i<0){
-		*p++ = '-';
-		i *= -1;
-	}
-	int shifter = i;
-	do{ //Move to where representation ends
-		++p;
-		shifter = shifter/10;
-	}while(shifter);
-	*p = '\0';
-	do{ //Move back, inserting digits as u go
-		*--p = digit[i%10];
-		i = i/10;
-	}while(i);
-	return b;
 }
 
 void setup() {
@@ -187,10 +210,8 @@ void loop() {
 	uint8_t received_byte;
 	while(1) {
 		int i = EEReadByte(Slave_addr, &received_byte);
-		char c[4];
-		itoa(i,c);
-		sendMessage(c);
 		sendChar(received_byte);
+		sendMessage(i);
 	}
 }
 
