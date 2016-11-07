@@ -16,7 +16,7 @@ EOF
             ls /dev/ | grep ttyUSB | xargs -I {} echo "    - {}"
         else
             sudo chmod o+rw /dev/$1
-            stty -F /dev/$1 $2 raw -echo -echoe -echok -echoctl -echoke && cat -v < /dev/$1
+            stty -f /dev/$1 $2 raw -echo -echoe -echok -echoctl -echoke && cat -v < /dev/$1
         fi
     fi
 }

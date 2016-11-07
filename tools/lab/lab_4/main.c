@@ -60,7 +60,7 @@ void init_wheels() {
 /*
  * Moves front left wheel. Takes direction as argumet, 1 = forward, 0 = backward
  */
-void fr_left(enum direction dir, uint8_t duty) {
+void fr_right(enum direction dir, uint8_t duty) {
 	switch(dir) {
 	case FORWARD:
 		PORTB |= (1 << PB4);
@@ -75,13 +75,13 @@ void fr_left(enum direction dir, uint8_t duty) {
 		PORTB &= ~(1 << PB4);
 	}
 
-	OCR2B = duty;
+	OCR0A = duty;
 }
 
 /*
  * Moves front right wheel. Takes direction as argumet, 1 = forward, 0 = backward
  */
-void fr_right(enum direction dir, uint8_t duty) {
+void fr_left(enum direction dir, uint8_t duty) {
 	switch(dir) {
 	case FORWARD:
 		PORTB |= (1 << PB2);
@@ -96,7 +96,7 @@ void fr_right(enum direction dir, uint8_t duty) {
 		PORTC &= ~(1 << PC0);
 	}
 
-	OCR0A = duty;
+	OCR2B = duty;
 }
 
 /*
@@ -167,6 +167,16 @@ char receiveChar() {
 	return UDR0;
 }
 
+void receiveMessage(char* message) {
+	int index = 0;
+	char c = receiveChar();
+	while (isdigit(c) || c == ',' || c == '-') {
+		message[index++] = c;
+		c = receiveChar();
+	}
+	message[index] = '\0';
+}
+
 void sendChar(char c) {
 	// Wait until buffer is empty
 	while (!(UCSR0A & (1 << UDRE0))) {}
@@ -192,41 +202,64 @@ int ctoi(char d)
 /*
  *
  */
-int get_input() {
-	char input[] = "";
+int parseInt(char* integer_str) {
+	int sign = 1;
+	int length = strlen(integer_str);
+	int i = 0;
+	if (integer_str[0] == '-') {
+		sign = -1;
+		i = 1;
+	}
 	int input_int = 0;
-	char c = receiveChar();
-	while (isdigit(c)) {
-		char c_str[] = {c, '\0'};
-		strcat(input, c_str);
-		c = receiveChar();
+	if (length >= 3) {
+		input_int = 1;
 	}
-	int length = strlen(input);
-	for (int i = 0; i < length; i++) {
-		input_int += (input[i] - '0') * pow(10, length - i - 1);
+	for (i; i < length; i++) {
+		input_int += ctoi(integer_str[i]) * pow(10, length - 1 - i);
 	}
-	return input_int;
+	return input_int*sign;
 }
 
 void loop() {
 	int duty = 0;
 	while(1) {
-		sendMessage("\r\nIn the main loop\r\n");
-		duty = get_input();
 
+		int length = 128;
+		char message[length + 1];
+		receiveMessage(message);
 
-		char duty_str[] = "";
-		sendMessage("lenght is: ");
-		itoa(duty, duty_str, 10);
-		sendMessage(duty_str);
-		sendMessage("\r\n");
+		char* token;
+		char* string;
+		char* tofree;
 
+		string = strdup(message);
+		if (string != NULL) {
+			int count = 1;
+			tofree = string;
+			while ((token = strsep(&string, ",")) != NULL)
+			{
+				enum direction rotation = FORWARD;
+				duty = parseInt(token);
+				if (duty < 0) {
+					rotation = BACKWARD;
+					duty = -1 * duty;
+				}
+				if (duty >= 0 && duty <= 255) {
+					switch(count) {
+					case 1: fr_left(rotation, duty);
+					break;
+					case 2: fr_right(rotation, duty);
+					break;
+					case 3: bk_left(rotation, duty);
+					break;
+					case 4: bk_right(rotation, duty);
+					break;
+					}
+					count++;
+				}
 
-		if (duty > 0 && duty < 256) {
-			fr_left(BACKWARD, duty);
-			fr_right(BACKWARD, duty);
-			bk_right(BACKWARD, duty);
-			bk_left(BACKWARD, duty);
+			}
+			free(tofree);
 		}
 	}
 }
