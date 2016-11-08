@@ -1,11 +1,12 @@
 apply plugin: 'java'
 apply plugin: 'application'
 
-mainClassName = "host.Host"
+mainClassName = "gateway.Gateway"
 
 dependencies {
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.3'
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.3'
+    compile group: 'commons-io', name: 'commons-io', version: '2.4'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.7.4'
     compile 'com.fasterxml.jackson.core:jackson-core:2.7.4'
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.7.4'

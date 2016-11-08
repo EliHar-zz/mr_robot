@@ -1,0 +1,6 @@
+{
+  "from": "Gateway",
+  "type": "image",
+  "name": "My Image",
+  "path": "host/data/images/image.png"
+}
