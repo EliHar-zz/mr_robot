@@ -13,42 +13,38 @@
 enum direction {FORWARD, BACKWARD};
 
 void init_wheels() {
-	// In back right wheel
+	// In back right wheel, Set as output
 	DDRC |= (1 << PC2);
 	DDRC |= (1 << PC1);
 
-	// In back left wheel
+	// In back left wheel, Set as output
 	DDRD |= (1 << PD2);
 	DDRB |= (1 << PB1);
 
 	// *******************************************************
-
-	// Enabler for back right wheels
-	DDRB |= (1 << PB3);
-
-	// Enabler for back left wheels
-	DDRD |= (1 << PD5);
-
-	// *******************************************************
-
-	// In front right wheel
+	// In front right wheel, Set as output
 	DDRC |= (1 << PC0);
 	DDRB |= (1 << PB2);
 
-	// In front left wheel
+	// In front left wheel, Set as output
 	DDRB |= (1 << PB4);
 	DDRB |= (1 << PB5);
 
 	// *******************************************************
-
-	// Enabler for front right wheels
+	// Enabler for front right wheels, Set as output
 	DDRD |= (1 << PD6);
 
-	// Enabler for front left wheels
+	// Enabler for front left wheels, Set as output
 	DDRD |= (1 << PD3);
 
-	// Set Timer0 in Fast PWM counting, with a prescaler 0
-	// The OC0A pin is cleared on match.
+	// Enabler for back right wheels, Set as output
+	DDRB |= (1 << PB3);
+
+	// Enabler for back left wheels, Set as output
+	DDRD |= (1 << PD5);
+
+	// Set Timer0, Timer2 in Fast PWM counting, with a prescaler 0
+	// The OC0A, OC0B, OC2A, OC2B pin is cleared on match.
 	// Non Inverted PWM output mode
 	TCCR0A = (1 << WGM00) | (1 << WGM01) | (1 << COM0A1) | (1 << COM0B1);
 	TCCR0B = (1 << CS00);
@@ -58,30 +54,36 @@ void init_wheels() {
 }
 
 /*
- * Moves front left wheel. Takes direction as argumet, 1 = forward, 0 = backward
+ * Moves front right wheel. Takes direction and duty cycle as argumet
  */
 void fr_right(enum direction dir, uint8_t duty) {
+	if (duty < 0 || duty > 255) {
+		return;
+	}
 	switch(dir) {
 	case FORWARD:
-		PORTB |= (1 << PB4);
-		PORTB &= ~(1 << PB5);
+		PORTB |= (1 << PB4); // Set to High
+		PORTB &= ~(1 << PB5);// Set to Low
 		break;
 	case BACKWARD:
-		PORTB |= (1 << PB5);
-		PORTB &= ~(1 << PB4);
+		PORTB |= (1 << PB5); // Set to High
+		PORTB &= ~(1 << PB4); // Set to Low
 		break;
 	default:
-		PORTB &= ~(1 << PB5);
-		PORTB &= ~(1 << PB4);
+		PORTB &= ~(1 << PB5); // Set to Low
+		PORTB &= ~(1 << PB4); // Set to Low
 	}
 
 	OCR0A = duty;
 }
 
 /*
- * Moves front right wheel. Takes direction as argumet, 1 = forward, 0 = backward
+ * Moves front left wheel. Takes direction and duty cycle as argumet
  */
 void fr_left(enum direction dir, uint8_t duty) {
+	if (duty < 0 || duty > 255) {
+		return;
+	}
 	switch(dir) {
 	case FORWARD:
 		PORTB |= (1 << PB2);
@@ -100,9 +102,12 @@ void fr_left(enum direction dir, uint8_t duty) {
 }
 
 /*
- * Moves back left wheel. Takes direction as argumet, 1 = forward, 0 = backward
+ * Moves back left wheel. Takes direction and duty cycle as argumet
  */
 void bk_left(enum direction dir, uint8_t duty) {
+	if (duty < 0 || duty > 255) {
+		return;
+	}
 	switch(dir) {
 	case FORWARD:
 		PORTB &= ~(1 << PB1);
@@ -121,9 +126,12 @@ void bk_left(enum direction dir, uint8_t duty) {
 }
 
 /*
- * Moves back right wheel. Takes direction as argumet, 1 = forward, 0 = backward
+ * Moves back right wheel. Takes direction and duty cycle as argumet
  */
 void bk_right(enum direction dir, uint8_t duty) {
+	if (duty < 0 || duty > 255) {
+		return;
+	}
 
 	switch(dir) {
 	case FORWARD:
@@ -142,11 +150,58 @@ void bk_right(enum direction dir, uint8_t duty) {
 	OCR2A = duty;
 }
 
-void set_wheels_dir(){
-	fr_left(FORWARD, 255);
-	fr_right(FORWARD, 255);
-	bk_right(FORWARD, 255);
-	bk_left(FORWARD, 255);
+/*
+ * Set the speed and direction of each wheel. +ive is forward, -ve is backward
+ */
+void set_wheels(int fl, int fr, int bl, int br){
+	if (fl < 0) {
+		fr_left(BACKWARD, -fl);
+	} else {
+		fr_left(FORWARD, fl);
+	}
+
+	if (fr < 0) {
+		fr_right(BACKWARD, -fr);
+	} else {
+		fr_right(FORWARD, fr);
+	}
+
+	if (bl < 0) {
+		bk_left(BACKWARD, -bl);
+	} else {
+		bk_left(FORWARD, bl);
+	}
+
+	if (br < 0) {
+		bk_right(BACKWARD, -br);
+	} else {
+		bk_right(FORWARD, br);
+	}
+}
+
+int speed(int speedOption) {
+	switch(speedOption) {
+	case 1: return 255;
+	break;
+	case 2: return 200;
+	break;
+	case 3: return 150;
+	break;
+	}
+	return 0;
+}
+
+/*
+ * Set the speed Of all wheels based on a preset 1=HIGH, 2 = MEDIUM, 3=LOW, +ve is Forward, -ve is backward
+ */
+void set_speed(int speedOption){
+	int duty = 0;
+	if (speedOption < 0) {
+		duty = -speed(-speedOption);
+	} else {
+		duty = speed(speedOption);
+	}
+	set_wheels(duty,duty,duty,duty);
 }
 
 //***************************  USART  *****************************
@@ -160,6 +215,10 @@ void init_USART() {
 	// Set frame: 8data, 1 stp
 	UCSR0C |= (1 << UCSZ01) | (1 << UCSZ00);
 }
+
+/*
+ * Receives a character from serial monitor
+ */
 char receiveChar() {
 	// Wait until data is received
 	while (!(UCSR0A & (1 << RXC0))) {}
@@ -167,16 +226,22 @@ char receiveChar() {
 	return UDR0;
 }
 
+/*
+ * Receives a message from serial monitor
+ */
 void receiveMessage(char* message) {
 	int index = 0;
 	char c = receiveChar();
-	while (isdigit(c) || c == ',' || c == '-') {
+	while (isdigit(c) || c == ',' || c == '-') { // Characters allowed to be received
 		message[index++] = c;
 		c = receiveChar();
 	}
 	message[index] = '\0';
 }
 
+/*
+ * sends char to serial monitor
+ */
 void sendChar(char c) {
 	// Wait until buffer is empty
 	while (!(UCSR0A & (1 << UDRE0))) {}
@@ -184,12 +249,18 @@ void sendChar(char c) {
 	UDR0 = c;
 }
 
+/*
+ * Send message to serial monitor
+ */
 void sendMessage(char msg[]) {
 	for (int i = 0; msg[i]; i++) {
 		sendChar(msg[i]);
 	}
 }
 
+/*
+ * Char to int
+ */
 int ctoi(char d)
 {
 	char str[2];
@@ -200,7 +271,7 @@ int ctoi(char d)
 }
 
 /*
- *
+ * Parses a string of integers
  */
 int parseInt(char* integer_str) {
 	int sign = 1;
@@ -221,45 +292,44 @@ int parseInt(char* integer_str) {
 }
 
 void loop() {
-	int duty = 0;
 	while(1) {
 
+		int duty = 0;
 		int length = 128;
 		char message[length + 1];
 		receiveMessage(message);
 
-		char* token;
-		char* string;
-		char* tofree;
-
-		string = strdup(message);
-		if (string != NULL) {
-			int count = 1;
-			tofree = string;
-			while ((token = strsep(&string, ",")) != NULL)
-			{
-				enum direction rotation = FORWARD;
-				duty = parseInt(token);
-				if (duty < 0) {
-					rotation = BACKWARD;
-					duty = -1 * duty;
-				}
-				if (duty >= 0 && duty <= 255) {
+		if (strlen(message) > 2) {
+			char* token;
+			char* string;
+			char* tofree;
+			string = strdup(message);
+			if (string != NULL) {
+				int count = 1;
+				tofree = string;
+				int fl = 0, fr = 0, bl = 0, br = 0; // variables to hold the speed
+				while ((token = strsep(&string, ",")) != NULL)
+				{
+					duty = parseInt(token);
 					switch(count) {
-					case 1: fr_left(rotation, duty);
+					case 1: fl = duty;
 					break;
-					case 2: fr_right(rotation, duty);
+					case 2: fr = duty;
 					break;
-					case 3: bk_left(rotation, duty);
+					case 3: bl = duty;
 					break;
-					case 4: bk_right(rotation, duty);
+					case 4: br = duty;
 					break;
 					}
 					count++;
-				}
 
+				}
+				set_wheels(fl,fr,bl,br);
+				free(tofree);
 			}
-			free(tofree);
+		} else { // Choose petween speed presets (1, 2 or 3). Use "-" sign for backward rotation
+			int speedOption = parseInt(message);
+			set_speed(speedOption);
 		}
 	}
 }
@@ -267,7 +337,6 @@ void loop() {
 int main() {
 	init_USART();
 	init_wheels();
-	set_wheels_dir();
 	loop();
 	return 0;
 }
