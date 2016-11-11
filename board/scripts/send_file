@@ -1,0 +1,45 @@
+print_usage() {
+cat<<EOF
+                 __       _           _   
+  /\/\  _ __    /__\ ___ | |__   ___ | |_ 
+ /    \| '__|  / \/// _ \| '_ \ / _ \| __|
+/ /\/\ | |_   / _  | (_) | |_) | (_) | |_ 
+\/    \|_(_)  \/ \_/\___/|_.__/ \___/ \__|
+
+                    _    __ _ _      
+ ___  ___ _ __   __| |  / _(_| | ___ 
+/ __|/ _ | '_ \ / _' | | |_| | |/ _ \\
+\__ |  __| | | | (_| | |  _| | |  __/
+|___/\___|_| |_|\__,_| |_| |_|_|\___|
+
+Mr. Robot Send file script.
+
+This script sends a file from one machine to another. 
+
+Note:
+    - The applications assumes that the host public key is registered in the target machine.
+    - The expected user name on the target machine is "robot"
+
+Usage: 
+	./send_file <ip_address> <file_path>
+	./send_file 192.168.1.22 /home/my_user/image.jpg
+
+EOF
+}
+
+send_file() {
+    if [[ ${#@} < 2 ]]
+    then
+		print_usage
+		exit 1
+    fi
+
+	scp robot@$1:/home/robot/camera $2
+	if [[ $? -ne 0 ]]
+	then
+		echo Failed to transfer file
+	fi
+}
+
+
+send_file $1 $2
