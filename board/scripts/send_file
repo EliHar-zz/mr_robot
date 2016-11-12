@@ -35,7 +35,9 @@ send_file() {
 		exit 1
     fi
 
-	scp $2 robot@$1:/home/robot/camera/
+    # TODO Check which one performs better
+	#scp $2 robot@$1:/home/robot/camera/
+    rsync -z $2 robot@$1:/home/robot/camera/
 	if [[ $? -ne 0 ]]
 	then
 		echo Failed to transfer file

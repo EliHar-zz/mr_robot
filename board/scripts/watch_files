@@ -21,8 +21,8 @@ Mr. Robot Watch file script.
 This script watches a file.
 
 Usage: 
-    ./watch <ip_address> <dir_path>
-    ./watch 192.168.0.117 /home/my_user/camera
+    ./watch_files <ip_address> <dir_path>
+    ./watch_files 192.168.0.117 /home/my_user/camera
 
 EOF
 }
