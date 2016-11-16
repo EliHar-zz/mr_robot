@@ -1,64 +1,40 @@
+#define F_CPU 1000000UL
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-int externalTimer1 = 0;
-int externalTimer2 = 0;
-int INT_EVERY = 5; // 5 seconds
-
-// Timer handler
-ISR(TIMER0_COMPA_vect) {
-
-	// Disable interrupts
-	cli();
-
-	if(externalTimer1++ == INT_EVERY * 10) {
-		PORTB ^= (1 << PB1);
-		externalTimer1 = 0;
-	}
-
-    // Enable interrupts
-    sei();
+// Interrupt Service Routine (interrupts when timer counter overflows)
+ISR(TIMER0_OVF_vect) {
+    cli(); // disable interrupts
+    PORTB ^= (1 << PB1); // toggle led
+    sei(); // re-enable interrupts
 }
 
-ISR(TIMER1_COMPA_vect) {
-
-	// Disable interrupts
-	cli();
-
-	if(externalTimer2++ == INT_EVERY * 10) {
-		PORTB ^= (1 << PB2);
-		externalTimer2 = 0;
-	}
-
-    // Enable interrupts
-    sei();
+ISR(TIMER2_OVF_vect) {
+    cli(); // disable interrupts
+    PORTB ^= (1 << PB2); // toggle led
+    sei(); // re-enable interrupts
 }
 
 void setup() {
+	cli(); // disable global interrupts
 
-	// First LED
-    DDRB |= (1 << PB1); // LED on pin PB1
-    TCCR0A = (1 << WGM01); // CTC mode
-    TIMSK0 = (1 << OCIE0A);
+	DDRB |= (1 << PB1); // set PB1 as output pin for LED
+	TIMSK0 = (1 << TOIE0); // enable Timer1 overflow interrupt
+	TCCR0B = (1 << CS00) | (1 << CS02); // 1024 prescalar
+	OCR0A = 3;
 
-    // Value calculated from http://eleccelerator.com/avr-timer-calculator/
-    OCR0A = 97.65625;
-    TCCR0B = (1 << CS00) | (1 << CS02); // 1024 prescalar
+	DDRB |= (1 << PB2); // set PB2 as output pin for LED
+	TIMSK2 = (1 << TOIE2); // enable Timer1 overflow interrupt
+	TCCR2B = (1 << CS00) | (1 << CS02); // 1024 prescalar
+	OCR2A = 3;
 
-    // Second LED
-    DDRB |= (1 << PB2); // LED on pin PB1
-    TCCR1A = (1 << WGM01); // CTC mode
-    TIMSK1 = (1 << OCIE1A);
-
-    // Value calculated from http://eleccelerator.com/avr-timer-calculator/
-    OCR1A = 97.65625;
-    TCCR1B = (1 << WGM01) | (1 << WGM00); // 1024 prescalar
-
-	// Enable global interrupts
-	sei();
+	sei(); // enable global interrupts:
 }
 
 int main(void) {
     setup();
+
+    // loop()
     while(1);
 }
