@@ -109,6 +109,7 @@ local.properties
 # Code Recommenders
 .recommenders/
 
+cv/*
 
 ### Gradle ###
 .gradle
