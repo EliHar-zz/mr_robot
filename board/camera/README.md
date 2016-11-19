@@ -26,19 +26,7 @@
     `v4l2-ctl --all`
     
   * To change video format to index 1 (just an example):  
-    `v4l2-ctl --set-fmt-video=pixelformat=1`
-  
-### Troubleshoot
-
-  * If you get **select timeout** when running `./capture`, run the following in your BBB terminal:
-```
-# Reference: https://www.raspberrypi.org/forums/viewtopic.php?t=35689&p=300710
-rmmod uvcvideo
-modprobe uvcvideo nodrop=1 timeout=5000 quirks=0x80
-```
-
-  * If you get **pipe:: Invalid data found when processing input** when running `avconv`, then make sure you have the avconv flags set in the correct order first, then try different arguments. Docs: https://libav.org/avconv.html
-  
+    `v4l2-ctl --set-fmt-video=pixelformat=1`  
 
 ### Streaming
 
@@ -63,6 +51,17 @@ Capture using the camera found at `/dev/video0` and output the raw data on the S
 
 Listen for UDP data on port 1234   
 `vlc udp://@:1234`
+
+### Troubleshoot
+
+  * If you get **select timeout** when running `./capture`, run the following in your BBB terminal:
+```
+# Reference: https://www.raspberrypi.org/forums/viewtopic.php?t=35689&p=300710
+rmmod uvcvideo
+modprobe uvcvideo nodrop=1 timeout=5000 quirks=0x80
+```
+
+  * If you get **pipe:: Invalid data found when processing input** when running `avconv`, then make sure you have the avconv flags set in the correct order first, then try different arguments. Docs: https://libav.org/avconv.html
 
 ### Reference
 
