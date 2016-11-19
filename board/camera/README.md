@@ -50,6 +50,9 @@ Capture using the camera found at `/dev/video0` and output the raw data on the S
 * `-f mpegts` ???
 * `udp://192.168.1.187:1234` Example of IP and port
 
+Speeding up the streaming:  
+https://trac.ffmpeg.org/wiki/How%20to%20speed%20up%20/%20slow%20down%20a%20video
+
 ##### PC
 
 Listen for UDP data on port 1234   
