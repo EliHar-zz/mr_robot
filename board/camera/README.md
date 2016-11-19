@@ -63,6 +63,8 @@ modprobe uvcvideo nodrop=1 timeout=5000 quirks=0x80
 
   * If you get **pipe:: Invalid data found when processing input** when running `avconv`, then make sure you have the avconv flags set in the correct order first, then try different arguments. Docs: https://libav.org/avconv.html
 
+  * If you are not sure you are receiving data on your PC, run Wireshark or `sudo tcpdump udp port 1234`
+
 ### Reference
 
   Derek Molloy:
