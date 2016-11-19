@@ -52,6 +52,9 @@ Capture using the camera found at `/dev/video0` and output the raw data on the S
 Listen for UDP data on port 1234   
 `vlc udp://@:1234`
 
+Now running `netstat` should show an entry for port 1234 udp  
+`netstat -na | grep 1234`
+
 ### Troubleshoot
 
   * If you get **select timeout** when running `./capture`, run the following in your BBB terminal:
