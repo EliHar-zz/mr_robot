@@ -10,7 +10,7 @@
 ### Software required
 
   * v4l-utils
-    * `apt-get install v4l-utils v4l-utils`
+    * `apt-get install v4l-utils`
   * BoneCV
     * `git clone https://github.com/derekmolloy/boneCV`
     * Build the project: `cd boneCV && ./build`
