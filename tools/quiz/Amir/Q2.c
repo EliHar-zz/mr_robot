@@ -8,20 +8,37 @@
 #include <stdlib.h>
 #include <avr/interrupt.h>
 
-// Global
-int externalTimer_1 = 0;
-int externalTimer_2 = 0;
-int externalTimer_3 = 0;
+// In the following program, variables ending with the number 1
+// correspond to the first LED, and variables ending with the
+// number 2 correspond to the second LED
+
+// Timer variables are used to count to a specific unit of time.
+// For example, if g_timer_1 is equal to 1, then the 1 msec has
+// passed. This is useful because we can have accurate timing
+// for blinking the LEDs.
+int g_timer_1 = 0;
+int g_timer_2 = 0;
+int g_timer_3 = 0;
 uint16_t adc_result;
 
-// Specific
-int delay_1 = 1; // First LED Speed
-int delay_2 = 1; // Second LED Speed
-int delay_ir = 1000;
-int intensity_1 = 0; // First LED brightness
-int intensity_2 = 0; // Second LED brightness
+// The amount of time specified by the user for blinking an LED.
+// For example, if g_delay_1 is equal to 1, then the first LED is
+// going to blink every 1 second
+int g_delay_1 = 1; // First LED Speed
+int g_delay_2 = 1; // Second LED Speed
 
-// get value of adc
+// The amout of time specified by the user for logging the IR value.
+// For example, if the delay_ir is equal to 1, then the IR is going
+// log its value evey 1 second
+int delay_ir = 1000;
+
+// The brightness of an LED is also specified by the user.
+// The value for the brightness variables goes from 0 to 255,
+// where 0 is LOW brightness and 255 is HIGH brightness.
+int g_brightness_1 = 0; // First LED brightness
+int g_brightness_2 = 0; // Second LED brightness
+
+// Read the value of adc
 uint16_t read_adc(uint8_t ch) {
 	ch = ch&0b00000111;
 	ADMUX |= ch;
@@ -31,32 +48,13 @@ uint16_t read_adc(uint8_t ch) {
 
 	// Wait for conversion to complete
 	while(!(ADCSRA & (1 << ADIF)));
-
-	// Clear ADIF by writing one to it
-	// Note you may be wondering why we have write one to clear it
-	// This is standard way of clearing bits in io as said in datasheets.
-	// The code writes '1' but it result in setting bit to '0' !!!
 	ADCSRA |= (1 << ADIF);
-
 	return ADC;
 }
 
-void toggleLED_1() {
-	if(OCR0A == 0) {
-		OCR0A = intensity_1;
-	} else {
-		OCR0A = 0;
-	}
-}
-
-void toggleLED_2() {
-	if(OCR0B == 0) {
-		OCR0B = intensity_2;
-	} else {
-		OCR0B = 0;
-	}
-}
-
+// Integer to ascii
+// The reason for not using the built-in method
+// is because it does not work properlu on mac machines
 char* itoa_2(int i, char b[]){
 	char const digit[] = "0123456789";
 	char* p = b;
@@ -77,78 +75,81 @@ char* itoa_2(int i, char b[]){
 	return b;
 }
 
-void send_IR() {
-	char adc_result_str[32]= {};
-	adc_result = read_adc(0);
-	itoa_2(adc_result, adc_result_str);
-	sendMessage(adc_result_str);
-	sendChar('\n');
-}
-
-// Timer handler
+// Timer2 handler
 ISR(TIMER2_COMPA_vect) {
 	cli();
-	if(externalTimer_3++ >= delay_ir) {
-		send_IR();
-		externalTimer_3 = 0;
+
+    // Log IR message if it's time to.
+	if(g_timer_3++ >= delay_ir) {
+        char adc_result_str[32]= {};
+        adc_result = read_adc(0);
+        itoa_2(adc_result, adc_result_str);
+        sendMessage(adc_result_str);
+        sendChar('\n');
+		g_timer_3 = 0;
 	}
 
-	if(externalTimer_1++ >= delay_1) {
-		toggleLED_1();
-		externalTimer_1 = 0;
+    // Check if it's time to toggle LED 1
+	if(g_timer_1++ >= g_delay_1) {
+        if(OCR0A == 0) {
+            OCR0A = g_brightness_1;
+        } else {
+            OCR0A = 0;
+        }
+		g_timer_1 = 0;
 	}
 
-	if(externalTimer_2++ >= delay_2) {
-		toggleLED_2();
-		externalTimer_2 = 0;
+    // Check if it's time to toggle LED 2
+	if(g_timer_2++ >= g_delay_2) {
+        if(OCR0B == 0) {
+            OCR0B = g_brightness_2;
+        } else {
+            OCR0B = 0;
+        }
+		g_timer_2 = 0;
 	}
 	sei();
 }
 
-void init_timer0() {
-	// Enabler for front right wheels, Set as output
+void init_timers() {
+    // Disable interrupts
+	cli();
+
+    // Prepare the 2 LEDs on pins PD6 and PD5
 	DDRD |= (1 << PD6);
 	DDRD |= (1 << PD5);
 
+    // Configure the mode of Timer0 which is going to take care
+    // of updating the brightness of the LEDs
 	TCCR0A = (1 << WGM00) | (1 << WGM01) | (1 << COM0A1) | (1 << COM0B1);
 	TCCR0B = (1 << CS00);
-}
 
-void init_timer2() {
-	TCCR2A = (1 << WGM21); // CTC mode
+    // Configure the mode of Timer2 which is goging to take care
+    // of blinking the LEDs according to the values provided
+    // by the user
+	TCCR2A = (1 << WGM21);
 	TIMSK2 = (1 << OCIE2A);
 
 	// Value calculated from http://eleccelerator.com/avr-timer-calculator/
+    // The OCR2A value allows us to "guarantee" an Timer interruption every
+    // 1 msec.
 	OCR2A = 0.9765625;
 	TCCR2B = (1 << CS20) | (1 << CS21) | (1 << CS22); // 1024 prescalar
 
-	// Enable global interrupts
+	// Enable interrupts
 	sei();
 }
 
-void updateLEDs(int d1, int i1, int d2, int i2) {
-	delay_1 = d1;
-	delay_2 = d2;
-	intensity_1 = i1;
-	intensity_2 = i2;
-}
-
-void init_Timers() {
-	cli();
-	init_timer0();
-	init_timer2();
-	sei();
-}
-
-
+// Init ADC
 void ADC_Init() {
 	ADMUX = (1 << REFS0);
 	ADCSRA = (1 << ADEN) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
 }
 
 
-
 //***************************  USART  *****************************
+// The following code, is a helper code that allow us to log
+// messages and to provide input throght the tty USB
 
 void init_USART() {
 	/*Set baud rate */
@@ -235,7 +236,20 @@ int parseInt(char* integer_str) {
 	return input_int*sign;
 }
 
-void loop() {
+int main() {
+
+    // Initialize serial communication
+	init_USART();
+    
+    // Initialize IR
+	ADC_Init();
+
+    // Initialze Timers 0 and 2
+    init_timers();
+
+    // Keep listening for input from the user.
+    // Input has the following format:
+    // <First LED delay>;<First LED brightness 0-255>;<Second LED delay>;<Second LED brightness 0-255>;<IR delay>\n
 	while(1) {
 		int input = 0;
 		int length = 128;
@@ -249,18 +263,20 @@ void loop() {
 			if (string != NULL) {
 				int count = 1;
 				tofree = string;
-				int d1 = 0, i1 = 0, d2 = 0, i2 = 0; // variables to hold the speed
-				while ((token = strsep(&string, ",")) != NULL)
+				int d1 = 0, b1 = 0, d2 = 0, b2 = 0;
+
+                // Specify the delimiter between values to be ';'
+				while ((token = strsep(&string, ";")) != NULL)
 				{
 					input = parseInt(token);
 					switch(count) {
 					case 1: d1 = input;
 					break;
-					case 2: i1 = input;
+					case 2: b1 = input;
 					break;
 					case 3: d2 = input;
 					break;
-					case 4: i2 = input;
+					case 4: b2 = input;
 					break;
 					}
 					count++;
@@ -269,18 +285,14 @@ void loop() {
 				if(count == 2) {
 					delay_ir = input;
 				} else {
-					updateLEDs(d1,i1,d2,i2);
+                    g_delay_1 = d1;
+                    g_delay_2 = d2;
+                    g_brightness_1 = b1;
+                    g_brightness_2 = b2;
 				}
 				free(tofree);
 			}
 		}
 	}
-}
-
-int main() {
-	init_USART();
-	ADC_Init();
-	init_Timers();
-	loop();
 	return 0;
 }
