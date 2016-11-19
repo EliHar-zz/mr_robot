@@ -30,14 +30,14 @@
   
 ### Troubleshoot
 
-  * If you get **select timeout** run the following in your BBB terminal:
+  * If you get **select timeout** when running `./capture`, run the following in your BBB terminal:
 ```
 # Reference: https://www.raspberrypi.org/forums/viewtopic.php?t=35689&p=300710
 rmmod uvcvideo
 modprobe uvcvideo nodrop=1 timeout=5000 quirks=0x80
 ```
 
-  * If you get **pipe:: Invalid data found when processing input**, then make sure you have the avconv flags set in the correct order first, then try different arguments. Docs: https://libav.org/avconv.html
+  * If you get **pipe:: Invalid data found when processing input** when running `avconv`, then make sure you have the avconv flags set in the correct order first, then try different arguments. Docs: https://libav.org/avconv.html
   
 
 ### Streaming
