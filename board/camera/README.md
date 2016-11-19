@@ -45,7 +45,7 @@ modprobe uvcvideo nodrop=1 timeout=5000 quirks=0x80
 #### Streaming from BBB to my PC on port 1234 over UDP
 
 ##### BBB
-
+*In this example I am running MJPEG video format. Other format require different parameters. For H265 check the tutorial website in the reference.*
 `./capture -o -c0 | avconv -f mjpeg -i pipe:0 -f mpegts udp://192.168.1.187:1234`
 
 ##### PC
