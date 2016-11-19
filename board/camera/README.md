@@ -27,6 +27,9 @@
     
   * To change video format to index 1 (just an example):  
     `v4l2-ctl --set-fmt-video=pixelformat=1`  
+    
+  * To change the resolution captured  
+    `v4l2-ctl --set-fmt-video=width=740,height=420`
 
 ### Streaming
 
