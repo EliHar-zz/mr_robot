@@ -96,9 +96,6 @@ void init_timers() {
 	sei();
 }
 
-void updateLEDs(int d1, int i1, int d2, int i2) {
-}
-
 //***************************  USART  *****************************
 // The following code, is a helper code that allow us to log
 // messages and to provide input throght the tty USB
@@ -201,7 +198,7 @@ int main() {
 
     // Keep listening for input from the user
     // Input has the following format:
-    // <First LED delay>;<First LED brightness 0-255>;<Second LED delay>;<Second LED brightness 0-255>;
+    // <First LED delay>;<First LED brightness 0-255>;<Second LED delay>;<Second LED brightness 0-255>\n
 	while(1) {
 		int input = 0;
 		int length = 128;
@@ -215,7 +212,6 @@ int main() {
 			if (string != NULL) {
 				int count = 1;
 				tofree = string;
-				int d1 = 0, i1 = 0, d2 = 0, i2 = 0; // variables to hold the speed
 
                 // Specify the delimiter between values to be ';'
 				while ((token = strsep(&string, ";")) != NULL)
