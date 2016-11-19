@@ -50,9 +50,18 @@ modprobe uvcvideo nodrop=1 timeout=5000 quirks=0x80
 Capture using the camera found at `/dev/video0` and output the raw data on the STDOUT, then pipe the output to `avconv` which will take care of streaming it to your PC using UDP  
 `./capture -o -c0 | avconv -f mjpeg -i pipe:0 -f mpegts udp://192.168.1.187:1234`
 
+* `capture` The capsture library modified to easily handle H265 video format
+* `-o` Output to the STDOUT
+* `-c0` Infinite frames
+* `avconv` Used to stream in this case. Can also store to files.
+* `-f mjpeg` format MJPEG
+* `-i pipe:0` Read input from the STDOUT of the piping program
+* `-f mpegts` ???
+* `udp://192.168.1.187:1234` Example of IP and port
+
 ##### PC
 
-Listen on UDP data on port 1234   
+Listen for UDP data on port 1234   
 `vlc udp://@:1234`
 
 ### Reference
