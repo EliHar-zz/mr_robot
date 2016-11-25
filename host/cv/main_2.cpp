@@ -1,24 +1,52 @@
 #include <iostream>
+#include <cstring>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
 using namespace cv;
 using namespace std;
 
+double getDistance(double realDimention, double digitalDimention) {
+	double FOCAL_LENGTH = 638.111425; // in pixels
+	int ERROR_MARGIN = 18; //pixels lost due to selection of circular shape
+	return realDimention * FOCAL_LENGTH / (digitalDimention + ERROR_MARGIN);
+}
+
+Point edgePoint(Mat imageDest) {
+	int thresh = 100;
+
+	Canny(imageDest, imageDest, thresh /*threshold1*/, thresh*2 /*threshold2*/, 3/*apertureSize*/);
+
+	vector<vector<Point> > contours;
+	vector<Vec4i> hierarchy;
+
+	findContours(imageDest, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+
+	return contours[0][0];
+}
+
 int main( int argc, char** argv ) {
 
-	// Create matrix from image
-	Mat imageSrc = imread("bb1.jpg", CV_LOAD_IMAGE_COLOR);
+	// Create matrix from imagea
+	Mat imageSrc = imread("1.jpg", CV_LOAD_IMAGE_COLOR);
+	int blue_lower[] = {100,115,50};
+	int blue_higher[] = {130,255,255};
+
+	int red_lower[] = {0,160,99};
+	int red_higher[] = {36,255,255};
+
+	int green_lower[] = {60,100,20};
+	int green_higher[] = {98,239,255};
 
 	// HSV low-high values
-	int lowH = 0;
-	int highH = 179;
+	int lowH = blue_lower[0];
+	int highH = blue_higher[0];
 
-	int lowS = 0;
-	int highS = 255;
+	int lowS = blue_lower[1];
+	int highS = blue_higher[1];
 
-	int lowV = 0;
-	int highV = 255;
+	int lowV = blue_lower[2];
+	int highV = blue_higher[2];
 
 	// Destination image
 	Mat imageDest;
@@ -44,7 +72,31 @@ int main( int argc, char** argv ) {
 	double x = mmts.m10 / mmts.m00;
 	double y = mmts.m01 / mmts.m00;
 
-	cout << x << y << endl;
+	cv::Size size = imageSrc.size();
+	double x_center = size.width/2.0f;
+	double y_center = size.height/2.0f;
+
+	// contour
+	Mat tmpDest = imageDest.clone();
+	Point point = edgePoint(tmpDest);
+
+	double diameter = norm(Point(x_center, y_center)- point)*2;
+
+	double distance = getDistance(7.5, diameter);
+
+	cout << "diameter is: "<< diameter << endl;
+	cout << "distance is: "<< distance << endl;
+
+	// Draw circle at x and y
+	Mat tmpSource = imageSrc.clone();
+	circle(tmpSource, Point(x,y), 10, Scalar(0, 120, 200), 10);
+	circle(tmpSource, point, 10, Scalar(120, 0, 0), 10);
+
+	// Show images in windows
+	imshow("Destination", imageDest);
+	imshow("Source", tmpSource);
+
+	waitKey(50000);
 
 	return 0;
 }
