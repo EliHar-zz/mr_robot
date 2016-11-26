@@ -1,4 +1,13 @@
 /*
+ * Original file: https://github.com/raspberrypi/linux/blob/rpi-4.4.y/Documentation/spi/spidev_test.c
+ *
+ * New changes in this version:
+ * - Changed default device to /dev/spidev1.0
+ * - Changed mode default value to 0
+ * - Changed speed default value to 1
+ * - Changed `if` condition for executing parbort("can't send spi message") 
+ * - Changed tx buffer value
+ *
  * SPI testing utility (using spidev driver)
  *
  * Copyright (c) 2007  MontaVista Software, Inc.
@@ -59,7 +68,6 @@ static void transfer(int fd)
 
     ret = ioctl(fd, SPI_IOC_MESSAGE(1), &tr);
     
-    // FIXED: Changed this condition
     if (ret < 0)
         pabort("can't send spi message");
 
