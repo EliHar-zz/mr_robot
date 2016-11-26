@@ -13,3 +13,4 @@
 ### To do
 - Extend the code for `spi_test.c` to allow writting custom messages by passing `--message` flag
 - Write a script to load BB-SPIDEV0 into the slots at startup
+- Update spi_test.c by the new version found at https://github.com/raspberrypi/linux/blob/rpi-4.4.y/Documentation/spi/spidev_test.c
