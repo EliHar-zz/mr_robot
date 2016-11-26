@@ -2,7 +2,7 @@
 
 ### Example steps
 - Load the program slave.c into the ATMEGA328
-- Disable the HDMI because it conflicts with SPI. To do that, copy the content of uEnv.txt into the BBB /boot/uEnv.txt (In fact, only the line containing the HDMI is being read)
+- Disable the HDMI because it conflicts with SPI. To do that, copy the content of uEnv.txt into the BBB /boot/uEnv.txt then restart (In fact, only the line containing the HDMI is being read)
 - Make sure you have the SPIDEV0 file under `/lib/firmware/` by typing: `ls /lib/firmware/*SPI*`. If it's not there, downloaded it from https://github.com/jadonk/cape-firmware/blob/master/arch/arm/boot/dts/BB-SPIDEV0-00A0.dts and compile it with `dtc`, (e.g. `dtc -O dtb -o BB-SPI1-01-00A0.dtbo -b 0 -@ BB-SPI1-01-00A0.dts`) then copy the new dtbo file created into `/lib/firmware/`
 - Load SPIDEV0 into the slots `echo BB-SPIDEV0 > /sys/devices/bone_capemgr.9/slots` (If you already loaded other SPI dtbo before, restart your BBB and load SPIDEV0 only or it won't work)
 - Open the Serial monitor for the ATMEGA328 (Slave). You can use the tool under https://github.com/EliHar/mr_robot/blob/master/tools/tty/monitor or the Arduino IDE
