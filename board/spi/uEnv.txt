@@ -1,0 +1,8 @@
+uname_r=3.8.13-bone79
+uuid=a7da0452-8234-4d10-8c0b-0fb095b5a8aa
+
+##Disable HDMI
+cape_disable=capemgr.disable_partno=BB-BONELT-HDMI,BB-BONELT-HDMIN
+cape_enable=capemgr.enable_partno=BB-SPIDEV0
+cape_enable=bone_capemgr.enable_partno=BB-SPIDEV0
+optargs=quiet drm.debug=7
