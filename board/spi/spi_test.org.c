@@ -1,5 +1,5 @@
 /*
- * Original file: https://github.com/raspberrypi/linux/blob/rpi-4.4.y/Documentation/spi/spidev_test.c
+ * Source: https://github.com/raspberrypi/linux/blob/rpi-4.4.y/Documentation/spi/spidev_test.c
  *
  * SPI testing utility (using spidev driver)
  *
