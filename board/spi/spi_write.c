@@ -1,8 +1,6 @@
 /*
  * This program uses the logic of the spi test file: https://github.com/EliHar/mr_robot/blob/master/board/spi/spi_test.c
  * Use this program to send input data from the BBB to the ATMega using SPI
- * Protocol:
- *      <size>:<message>
  */
 
 #include <stdint.h>
@@ -38,26 +36,12 @@ static uint32_t speed = 0;
  *  Unescape - process hexadecimal escape character
  *      converts shell input "\x23" -> 0x23
  */
-static int parse(char *_dst, char *_src, size_t len, int preLen)
+static int parse(char *_dst, char *_src, size_t len)
 {
     int ret = 0;
     char *src = _src;
     char *dst = _dst;
     unsigned int ch;
-
-    // Add the length digit by digit
-    size_t tmpSize = len;
-    int i;
-    for(i=0; i < preLen; i++) {
-        int power = pow(10.0, (preLen-1-i));
-        *dst++ = tmpSize / power;
-        tmpSize %= power;
-        ret++;
-    }
-
-    // Add the `:` symbol
-    *dst++ = (int) ':';
-    ret++;
 
     while (*src) {
         *dst++ = *src++;
@@ -143,17 +127,14 @@ int main(int argc, char *argv[])
     puts("Calculating size before parsing ...");
     size = strlen(input_tx);
 
-    // Increase size for the protocol: <size>:<message>
-    int preLen = log10(size)+1;
-
     printf("size: %d\n", size);
 
     // Allocate memory
-    tx = malloc(size + preLen + 1);
-    rx = malloc(size + preLen + 1);
+    tx = malloc(size);
+    rx = malloc(size);
 
     puts("Calculating size after parsing ...");
-    size = parse((char *)tx, input_tx, size, preLen);
+    size = parse((char *)tx, input_tx, size);
 
     printf("size: %d\n", size);
 
