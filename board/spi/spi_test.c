@@ -4,9 +4,9 @@
  * New changes in this version:
  * - Changed default device to /dev/spidev1.0
  * - Changed mode default value to 0
- * - Changed speed default value to 1
+ * - Changed speed default value to 0
  * - Changed `if` condition for executing parbort("can't send spi message") 
- * - Changed tx buffer value
+ * - Read tx values from the user
  *
  * SPI testing utility (using spidev driver)
  *
@@ -30,6 +30,7 @@
 #include <sys/ioctl.h>
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
+#include <string.h>
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
@@ -42,53 +43,96 @@ static void pabort(const char *s)
 // Set default to spidev1.0
 static const char *device = "/dev/spidev1.0";
 static uint8_t mode = 0;
-static uint8_t bits = 8;
-static uint16_t delay;
+static uint8_t bits = 0;
+static uint16_t delay = 0;
 
 // This speed value works
-static uint32_t speed = 1;
+static uint32_t speed = 0;
 
-static void transfer(int fd)
+char *input_tx;
+
+static void hex_dump(const void *src, size_t length, size_t line_size, char *prefix)
+{
+    int i = 0;
+    const unsigned char *address = src;
+    const unsigned char *line = address;
+    unsigned char c;
+
+    printf("%s | ", prefix);
+    while (length-- > 0) {
+        printf("%02X ", *address++);
+        if (!(++i % line_size) || (length == 0 && i % line_size)) {
+            if (length == 0) {
+                while (i++ % line_size)
+                    printf("__ ");
+            }
+            printf(" | ");  /* right close */
+            while (line < address) {
+                c = *line++;
+                printf("%c", (c < 33 || c == 255) ? 0x2E : c);
+            }
+            printf("\n");
+            if (length > 0)
+                printf("%s | ", prefix);
+        }
+    }
+}
+
+/*
+ *  Unescape - process hexadecimal escape character
+ *      converts shell input "\x23" -> 0x23
+ */
+static int unescape(char *_dst, char *_src, size_t len)
+{
+    int ret = 0;
+    char *src = _src;
+    char *dst = _dst;
+    unsigned int ch;
+
+    while (*src) {
+        if (*src == '\\' && *(src+1) == 'x') {
+            sscanf(src + 2, "%2x", &ch);
+            src += 4;
+            *dst++ = (unsigned char)ch;
+        } else {
+            *dst++ = *src++;
+        }
+        ret++;
+    }
+    return ret;
+}
+
+static void transfer(int fd, uint8_t const *tx, uint8_t const *rx, size_t len)
 {
     int ret;
-    
-    // Put 1,2,3 into transfer buffer 
-    uint8_t tx[] = {
-        1,2,3
-    };
-    uint8_t rx[ARRAY_SIZE(tx)] = {0, };
+
     struct spi_ioc_transfer tr = {
         .tx_buf = (unsigned long)tx,
         .rx_buf = (unsigned long)rx,
-        .len = ARRAY_SIZE(tx),
+        .len = len,
         .delay_usecs = delay,
-        .speed_hz = 0,
-        .bits_per_word = 0,
+        .speed_hz = speed,
+        .bits_per_word = bits,
     };
 
     ret = ioctl(fd, SPI_IOC_MESSAGE(1), &tr);
-    
-    if (ret < 0)
+    if (ret < 1)
         pabort("can't send spi message");
 
-    for (ret = 0; ret < ARRAY_SIZE(tx); ret++) {
-        if (!(ret % 6))
-            puts("");
-        printf("%.2X ", rx[ret]);
-    }
-    puts("");
+    hex_dump(rx, len, 32, "RX");
 }
 
 void print_usage(const char *prog)
 {
-    printf("Usage: %s [-DsbdlHOLC3]\n", prog);
-    puts("  -D --device   device to use (default /dev/spidev1.1)\n"
+    printf("Usage: %s [-DsbdlHOLpC3]\n", prog);
+    puts("  -D --device   device to use (default /dev/spidev1.0)\n"
             "  -s --speed    max speed (Hz)\n"
             "  -d --delay    delay (usec)\n"
             "  -b --bpw      bits per word \n"
             "  -l --loop     loopback\n"
             "  -H --cpha     clock phase\n"
             "  -O --cpol     clock polarity\n"
+            "  -p            Send data (e.g. \"1234\\xde\\xad\")\n"
             "  -L --lsb      least significant bit first\n"
             "  -C --cs-high  chip select active high\n"
             "  -3 --3wire    SI/SO signals shared\n");
@@ -113,7 +157,7 @@ void parse_opts(int argc, char *argv[])
         };
         int c;
 
-        c = getopt_long(argc, argv, "D:s:d:b:lHOLC3", lopts, NULL);
+        c = getopt_long(argc, argv, "D:s:d:b:lHOLC3p:", lopts, NULL);
 
         if (c == -1)
             break;
@@ -149,6 +193,9 @@ void parse_opts(int argc, char *argv[])
             case '3':
                 mode |= SPI_3WIRE;
                 break;
+            case 'p':
+                input_tx = optarg;
+                break;
             default:
                 print_usage(argv[0]);
                 break;
@@ -160,6 +207,9 @@ int main(int argc, char *argv[])
 {
     int ret = 0;
     int fd;
+    uint8_t *tx;
+    uint8_t *rx;
+    int size;
 
     parse_opts(argc, argv);
 
@@ -204,7 +254,20 @@ int main(int argc, char *argv[])
     printf("bits per word: %d\n", bits);
     printf("max speed: %d Hz (%d KHz)\n", speed, speed/1000);
 
-    transfer(fd);
+    if (input_tx) {
+        size = strlen(input_tx+1);
+        tx = malloc(size);
+        rx = malloc(size);
+        puts("Calculating size ...");
+        size = unescape((char *)tx, input_tx, size);
+        printf("size: %d\n", size);
+        puts("Starting transfer ...");
+        transfer(fd, tx, rx, size);
+        free(rx);
+        free(tx);
+    } else {
+        print_usage(argv[0]);
+    }
 
     close(fd);
 
