@@ -1,6 +1,8 @@
 /*
  * This program uses the logic of the spi test file: https://github.com/EliHar/mr_robot/blob/master/board/spi/spi_test.c
  * Use this program to send input data from the BBB to the ATMega using SPI
+ * Protocol:
+ *      <size>:<message>
  */
 
 #include <stdint.h>
