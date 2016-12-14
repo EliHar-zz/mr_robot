@@ -96,8 +96,10 @@ void sendMessage(char msg[]) {
 //************************ Control car ***********************************
 void init_wheels() {
 	// In back wheels, Set as output
-	DDRB |= (1 << PB6);
-	DDRB |= (1 << PB7);
+	DDRD |= (1 << PD7);
+	DDRC |= (1 << PC0);
+	DDRC |= (1 << PC2);
+	DDRC |= (1 << PC1);
 
 	// *******************************************************
 	// In front right wheel, Set as output
@@ -136,17 +138,17 @@ void fr_right(enum direction dir, uint8_t duty) {
 		return;
 	}
 	switch(dir) {
-	case FORWARD:
-		PORTC |= (1 << PC4); // Set to High
-		PORTC &= ~(1 << PC5);// Set to Low
-		break;
-	case BACKWARD:
-		PORTC |= (1 << PC5); // Set to High
-		PORTC &= ~(1 << PC4); // Set to Low
-		break;
-	default:
-		PORTC &= ~(1 << PC4); // Set to Low
-		PORTC &= ~(1 << PC5); // Set to Low
+		case FORWARD:
+			PORTC |= (1 << PC4); // Set to High
+			PORTC &= ~(1 << PC5);// Set to Low
+			break;
+		case BACKWARD:
+			PORTC |= (1 << PC5); // Set to High
+			PORTC &= ~(1 << PC4); // Set to Low
+			break;
+		default:
+			PORTC &= ~(1 << PC4); // Set to Low
+			PORTC &= ~(1 << PC5); // Set to Low
 	}
 
 	OCR2B = duty;
@@ -161,17 +163,17 @@ void fr_left(enum direction dir, uint8_t duty) {
 		return;
 	}
 	switch(dir) {
-	case FORWARD:
-		PORTD |= (1 << PD4);
-		PORTD &= ~(1 << PD2);
-		break;
-	case BACKWARD:
-		PORTD |= (1 << PD2);
-		PORTD &= ~(1 << PD4);
-		break;
-	default:
-		PORTD &= ~(1 << PD4);
-		PORTD &= ~(1 << PD2);
+		case FORWARD:
+			PORTD |= (1 << PD4);
+			PORTD &= ~(1 << PD2);
+			break;
+		case BACKWARD:
+			PORTD |= (1 << PD2);
+			PORTD &= ~(1 << PD4);
+			break;
+		default:
+			PORTD &= ~(1 << PD4);
+			PORTD &= ~(1 << PD2);
 	}
 
 	OCR0B = duty;
@@ -185,17 +187,23 @@ void bk_wheels(enum direction dir, uint8_t duty) {
 		return;
 	}
 	switch(dir) {
-	case FORWARD:
-		PORTB |= (1 << PB7);
-		PORTB &= ~(1 << PB6);
-		break;
-	case BACKWARD:
-		PORTB |= (1 << PB6);
-		PORTB &= ~(1 << PB7);
-		break;
-	default:
-		PORTB &= ~(1 << PB7);
-		PORTB &= ~(1 << PB6);
+		case FORWARD:
+			PORTD |= (1 << PD7);
+			PORTC &= ~(1 << PC0);
+			PORTC |= (1 << PC2);
+			PORTC &= ~(1 << PC1);
+			break;
+		case BACKWARD:
+			PORTD &= ~(1 << PD7);
+			PORTC |= (1 << PC0);
+			PORTC &= ~(1 << PC2);
+			PORTC |= (1 << PC1);
+			break;
+		default:
+			PORTD &= ~(1 << PD7);
+			PORTC &= ~(1 << PC0);
+			PORTC &= ~(1 << PC2);
+			PORTC &= ~(1 << PC1);
 	}
 
 	OCR0A = duty;
