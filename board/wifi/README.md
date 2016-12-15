@@ -2,6 +2,8 @@
 
 ### Setup WiFi
 
+Follow the steps in the PDF document
+
 #### Troubleshooting
 
     root@beaglebone:~# sudo ifdown wlan0 && sudo ifup wlan0
