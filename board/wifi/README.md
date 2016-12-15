@@ -14,7 +14,7 @@ Follow the steps in the PDF document
 
 **Fix**
 
-    killall wpa_supplicant
+    service wpa_supplicant stop
 
 Reference: 
  * https://cdn-learn.adafruit.com/downloads/pdf/setting-up-wifi-with-beaglebone-black.pdf
