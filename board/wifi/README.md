@@ -10,7 +10,7 @@
     run-parts: /etc/network/if-pre-up.d/wpasupplicant exited with return code 1
     Failed to bring up wlan0.
 
-** Fix **
+**Fix**
 
     killall wpa_supplicant
 
