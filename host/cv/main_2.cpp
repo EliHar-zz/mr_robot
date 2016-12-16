@@ -2,6 +2,10 @@
 #include <cstring>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <string>
+#include <math.h>
+
+#define PI 3.14159265
 
 using namespace cv;
 using namespace std;
@@ -25,28 +29,50 @@ Point edgePoint(Mat imageDest) {
 	return contours[0][0];
 }
 
+int[][] color_specs(string color){
+
+	int specs[2][3];
+
+	if (!color.compare("blue")) {
+		specs[0][0] = 100;
+		specs[0][1] = 115;
+		specs[0][2] = 50;
+		specs[1][0] = 130;
+		specs[1][1] = 255;
+		specs[1][2] = 255;
+	} else if (!color.compare("red")) {
+		specs[0][0] = 0;
+		specs[0][1] = 160;
+		specs[0][2] = 99;
+		specs[1][0] = 36;
+		specs[1][1] = 255;
+		specs[1][2] = 255;
+	}
+
+	//	int green_lower[] = {60,100,20};
+	//	int green_higher[] = {98,239,255};
+
+	return specs;
+}
+
 int main( int argc, char** argv ) {
 
-	// Create matrix from imagea
-	Mat imageSrc = imread("1.jpg", CV_LOAD_IMAGE_COLOR);
-	int blue_lower[] = {100,115,50};
-	int blue_higher[] = {130,255,255};
+	string image_file_name = argv[1];
+	string color = argv[2];
 
-	int red_lower[] = {0,160,99};
-	int red_higher[] = {36,255,255};
+	Mat imageSrc = imread(image_file_name, CV_LOAD_IMAGE_COLOR);
 
-	int green_lower[] = {60,100,20};
-	int green_higher[] = {98,239,255};
+	int color_specs[2][3] = color_specs(color);
 
 	// HSV low-high values
-	int lowH = blue_lower[0];
-	int highH = blue_higher[0];
+	int lowH = color_specs[0][0];
+	int highH = color_specs[1][0];
 
-	int lowS = blue_lower[1];
-	int highS = blue_higher[1];
+	int lowS = color_specs[0][1];
+	int highS = color_specs[1][1];
 
-	int lowV = blue_lower[2];
-	int highV = blue_higher[2];
+	int lowV = color_specs[0][2];
+	int highV = color_specs[1][2];
 
 	// Destination image
 	Mat imageDest;
@@ -69,9 +95,10 @@ int main( int argc, char** argv ) {
 	Moments mmts = moments(imageDest);
 
 	// Calculate center x and y (Centroids)
-	double x = mmts.m10 / mmts.m00;
-	double y = mmts.m01 / mmts.m00;
+	double x_object = mmts.m10 / mmts.m00;
+	double y_object = mmts.m01 / mmts.m00;
 
+	// Center of image
 	cv::Size size = imageSrc.size();
 	double x_center = size.width/2.0f;
 	double y_center = size.height/2.0f;
@@ -81,22 +108,26 @@ int main( int argc, char** argv ) {
 	Point point = edgePoint(tmpDest);
 
 	double diameter = norm(Point(x_center, y_center)- point)*2;
+	double realDiameter = 7.0;
+	double distance = getDistance(realDiameter, diameter);
 
-	double distance = getDistance(7.5, diameter);
+	// Get rotation angle
+	double rotation_angle = atan((x_object - x_center)/distance) * 180 / PI;;
 
-	cout << "diameter is: "<< diameter << endl;
-	cout << "distance is: "<< distance << endl;
+	cout << "distance is: "<< distance << rotation_angle << endl;
+
+	system("");
 
 	// Draw circle at x and y
-	Mat tmpSource = imageSrc.clone();
-	circle(tmpSource, Point(x,y), 10, Scalar(0, 120, 200), 10);
-	circle(tmpSource, point, 10, Scalar(120, 0, 0), 10);
+//	Mat tmpSource = imageSrc.clone();
+//	circle(tmpSource, Point(x_object,y_object), 10, Scalar(0, 120, 200), 10);
+//	circle(tmpSource, point, 10, Scalar(120, 0, 0), 10);
 
 	// Show images in windows
-	imshow("Destination", imageDest);
-	imshow("Source", tmpSource);
-
-	waitKey(50000);
+//	imshow("Destination", imageDest);
+//	imshow("Source", tmpSource);
+//
+//	waitKey(50000);
 
 	return 0;
 }
