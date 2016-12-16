@@ -3,6 +3,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <string>
+#include <vector>
 #include <math.h>
 
 #define PI 3.14159265
@@ -29,9 +30,7 @@ Point edgePoint(Mat imageDest) {
 	return contours[0][0];
 }
 
-int[][] color_specs(string color){
-
-	int specs[2][3];
+void get_color_specs(vector<vector<int> > &specs, string color){
 
 	if (!color.compare("blue")) {
 		specs[0][0] = 100;
@@ -51,8 +50,6 @@ int[][] color_specs(string color){
 
 	//	int green_lower[] = {60,100,20};
 	//	int green_higher[] = {98,239,255};
-
-	return specs;
 }
 
 int main( int argc, char** argv ) {
@@ -62,7 +59,8 @@ int main( int argc, char** argv ) {
 
 	Mat imageSrc = imread(image_file_name, CV_LOAD_IMAGE_COLOR);
 
-	int color_specs[2][3] = color_specs(color);
+	vector<vector<int> > color_specs(2, vector<int>(3));
+	get_color_specs(color_specs, color);
 
 	// HSV low-high values
 	int lowH = color_specs[0][0];
@@ -96,7 +94,7 @@ int main( int argc, char** argv ) {
 
 	// Calculate center x and y (Centroids)
 	double x_object = mmts.m10 / mmts.m00;
-	double y_object = mmts.m01 / mmts.m00;
+//	double y_object = mmts.m01 / mmts.m00;
 
 	// Center of image
 	cv::Size size = imageSrc.size();
@@ -114,9 +112,9 @@ int main( int argc, char** argv ) {
 	// Get rotation angle
 	double rotation_angle = atan((x_object - x_center)/distance) * 180 / PI;;
 
-	cout << "distance is: "<< distance << rotation_angle << endl;
+	cout << "distance is: "<< distance << " "<< rotation_angle << endl;
 
-	system("");
+	int n = system("echo test");
 
 	// Draw circle at x and y
 //	Mat tmpSource = imageSrc.clone();
