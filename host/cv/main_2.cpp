@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <math.h>
+#include <stdlib.h>
 
 #define PI 3.14159265
 
@@ -61,16 +62,15 @@ void get_color_specs(vector<vector<int> > &specs, string color){
 
 int main( int argc, char** argv ) {
 
-	string image_file_name = argv[1];
+	int cap_num  = atoi(argv[1]);
 	string color = argv[2];
 
 	 VideoCapture cap;
 
-	 if(!cap.open(1))
+	 if(!cap.open(cap_num))
 		 return 1;
 
 	while(1) {
-//		Mat imageSrc = imread(image_file_name, CV_LOAD_IMAGE_COLOR);
 		Mat imageSrc;
 		cap >> imageSrc;
 
@@ -131,18 +131,19 @@ int main( int argc, char** argv ) {
 		double rotation_angle = atan(realDiff / distance) * 180 / PI;
 
 		cout << "distance is: "<< distance << " "<< rotation_angle << " "<< diameter <<  endl;
-		//cout << tmpDest;
 
+		// Draw circle at x and y
+		Mat tmpSource = imageSrc.clone();
+		circle(tmpSource, Point(x_object,y_object), 3, Scalar(229, 240, 76), 4);
+		circle(tmpSource, Point(x_object,y_object), diameter/2, Scalar(44, 252, 14), 5);
+
+		// Center
+		circle(tmpSource, Point(x_center,y_center), 10, Scalar(255, 255, 255), 10);
+
+		imwrite("/var/www/html/mr_robot/out.jpg", tmpSource);
 	}
 //	int n = system("ssh root@$BBB_IP \"/root/mr_robot/tools/lab/lab_5/write 255,255,255#\"");
 
-	// Draw circle at x and y
-//	Mat tmpSource = imageSrc.clone();
-//	circle(tmpSource, Point(x_object,y_object), 3, Scalar(229, 240, 76), 4);
-//	circle(tmpSource, Point(x_object,y_object), diameter/2, Scalar(44, 252, 14), 5);
-
-	// Center
-//	circle(tmpSource, Point(x_center,y_center), 10, Scalar(255, 255, 255), 10);
 
 	// Show images in windows
 //	imshow("Destination", imageDest);
