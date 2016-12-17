@@ -64,81 +64,91 @@ int main( int argc, char** argv ) {
 	string image_file_name = argv[1];
 	string color = argv[2];
 
-	Mat imageSrc = imread(image_file_name, CV_LOAD_IMAGE_COLOR);
+	 VideoCapture cap;
 
-	vector<vector<int> > color_specs(2, vector<int>(3));
-	get_color_specs(color_specs, color);
+	 if(!cap.open(1))
+		 return 1;
 
-	// HSV low-high values
-	int lowH = color_specs[0][0];
-	int highH = color_specs[1][0];
+	while(1) {
+//		Mat imageSrc = imread(image_file_name, CV_LOAD_IMAGE_COLOR);
+		Mat imageSrc;
+		cap >> imageSrc;
 
-	int lowS = color_specs[0][1];
-	int highS = color_specs[1][1];
+		vector<vector<int> > color_specs(2, vector<int>(3));
+		get_color_specs(color_specs, color);
 
-	int lowV = color_specs[0][2];
-	int highV = color_specs[1][2];
+		// HSV low-high values
+		int lowH = color_specs[0][0];
+		int highH = color_specs[1][0];
 
-	// Destination image
-	Mat imageDest;
+		int lowS = color_specs[0][1];
+		int highS = color_specs[1][1];
 
-	// Convert BGR to HSV
-	cvtColor(imageSrc, imageDest, COLOR_BGR2HSV);
+		int lowV = color_specs[0][2];
+		int highV = color_specs[1][2];
 
-	// Get colors in specified range
-	inRange(imageDest, Scalar(lowH, lowS, lowV), Scalar(highH, highS, highV), imageDest);
+		// Destination image
+		Mat imageDest;
 
-	// Morphological opening
-	erode(imageDest, imageDest, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)) );
-	dilate(imageDest, imageDest, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)) );
+		// Convert BGR to HSV
+		cvtColor(imageSrc, imageDest, COLOR_BGR2HSV);
 
-	// Morphological closing
-	dilate(imageDest, imageDest, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)) );
-	erode(imageDest, imageDest, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)) );
+		// Get colors in specified range
+		inRange(imageDest, Scalar(lowH, lowS, lowV), Scalar(highH, highS, highV), imageDest);
 
-	// Create moment
-	Moments mmts = moments(imageDest);
+		// Morphological opening
+		erode(imageDest, imageDest, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)) );
+		dilate(imageDest, imageDest, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)) );
 
-	// Calculate center x and y (Centroids)
-	double x_object = mmts.m10 / mmts.m00;
-	double y_object = mmts.m01 / mmts.m00;
+		// Morphological closing
+		dilate(imageDest, imageDest, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)) );
+		erode(imageDest, imageDest, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)) );
 
-	// Center of image
-	cv::Size size = imageSrc.size();
-	double x_center = size.width/2.0f;
-	double y_center = size.height/2.0f;
+		// Create moment
+		Moments mmts = moments(imageDest);
 
-	// contour
-	Mat tmpDest = imageDest.clone();
-	Point point = edgePoint(tmpDest, Point(x_center, y_center));
+		// Calculate center x and y (Centroids)
+		double x_object = mmts.m10 / mmts.m00;
+		double y_object = mmts.m01 / mmts.m00;
 
-	double diameter = norm(Point(x_object, y_object)- point)*2;
-	double realDiameter = 6.5;
+		// Center of image
+		cv::Size size = imageSrc.size();
+		double x_center = size.width/2.0f;
+		double y_center = size.height/2.0f;
 
-	double distance = getDistance(realDiameter, diameter);
+		// contour
+		Mat tmpDest = imageDest.clone();
+		Point point = edgePoint(tmpDest, Point(x_center, y_center));
 
-	// Get rotation angle
-	int digitalDiff = x_object - x_center;
-	double realDiff = digitalDiff * (realDiameter / diameter);
-	double rotation_angle = atan(realDiff / distance) * 180 / PI;
+		double diameter = norm(Point(x_object, y_object)- point)*2;
+		double realDiameter = 6.5;
 
-	cout << "distance is: "<< distance << " "<< rotation_angle << " "<< diameter <<  endl;
+		double distance = getDistance(realDiameter, diameter);
 
-	int n = system("ssh root@$BBB_IP \"/root/mr_robot/tools/lab/lab_5/write 255,255,255#\"");
+		// Get rotation angle
+		int digitalDiff = x_object - x_center;
+		double realDiff = digitalDiff * (realDiameter / diameter);
+		double rotation_angle = atan(realDiff / distance) * 180 / PI;
+
+		cout << "distance is: "<< distance << " "<< rotation_angle << " "<< diameter <<  endl;
+		//cout << tmpDest;
+
+	}
+//	int n = system("ssh root@$BBB_IP \"/root/mr_robot/tools/lab/lab_5/write 255,255,255#\"");
 
 	// Draw circle at x and y
-	Mat tmpSource = imageSrc.clone();
-	circle(tmpSource, Point(x_object,y_object), 3, Scalar(229, 240, 76), 4);
-	circle(tmpSource, Point(x_object,y_object), diameter/2, Scalar(44, 252, 14), 5);
+//	Mat tmpSource = imageSrc.clone();
+//	circle(tmpSource, Point(x_object,y_object), 3, Scalar(229, 240, 76), 4);
+//	circle(tmpSource, Point(x_object,y_object), diameter/2, Scalar(44, 252, 14), 5);
 
 	// Center
-	circle(tmpSource, Point(x_center,y_center), 10, Scalar(255, 255, 255), 10);
+//	circle(tmpSource, Point(x_center,y_center), 10, Scalar(255, 255, 255), 10);
 
 	// Show images in windows
-	imshow("Destination", imageDest);
-	imshow("Source", tmpSource);
+//	imshow("Destination", imageDest);
+//	imshow("Source", tmpSource);
 
-	waitKey(0);
+//	waitKey(0);
 
 	return 0;
 }
