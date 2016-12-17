@@ -13,6 +13,9 @@ Vagrant.configure(2) do |config|
     # Mount volume
     config.vm.synced_folder ".", "/home/vagrant/mr_robot"
 
+    # Network
+    config.vm.network "public_network"
+
     # VM Provision
     config.vm.provision "shell", inline: <<-SHELL
         sudo apt-get update
