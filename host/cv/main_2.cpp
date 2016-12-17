@@ -12,12 +12,12 @@ using namespace cv;
 using namespace std;
 
 double getDistance(double realDimention, double digitalDimention) {
-	double FOCAL_LENGTH = 638.111425; // in pixels
+	double FOCAL_LENGTH = 948.6071428572; // in pixels
 	int ERROR_MARGIN = 18; //pixels lost due to selection of circular shape
 	return realDimention * FOCAL_LENGTH / (digitalDimention + ERROR_MARGIN);
 }
 
-Point edgePoint(Mat imageDest) {
+Point edgePoint(Mat imageDest, Point def) {
 	int thresh = 100;
 
 	Canny(imageDest, imageDest, thresh /*threshold1*/, thresh*2 /*threshold2*/, 3/*apertureSize*/);
@@ -27,6 +27,9 @@ Point edgePoint(Mat imageDest) {
 
 	findContours(imageDest, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
 
+	if(contours.size() == 0) {
+		return def;
+	}
 	return contours[0][0];
 }
 
@@ -41,15 +44,19 @@ void get_color_specs(vector<vector<int> > &specs, string color){
 		specs[1][2] = 255;
 	} else if (!color.compare("red")) {
 		specs[0][0] = 0;
-		specs[0][1] = 160;
-		specs[0][2] = 99;
-		specs[1][0] = 36;
+		specs[0][1] = 197;
+		specs[0][2] = 109;
+		specs[1][0] = 182;
+		specs[1][1] = 255;
+		specs[1][2] = 255;
+	} else {
+		specs[0][0] = 255;
+		specs[0][1] = 255;
+		specs[0][2] = 255;
+		specs[1][0] = 255;
 		specs[1][1] = 255;
 		specs[1][2] = 255;
 	}
-
-	//	int green_lower[] = {60,100,20};
-	//	int green_higher[] = {98,239,255};
 }
 
 int main( int argc, char** argv ) {
@@ -94,7 +101,7 @@ int main( int argc, char** argv ) {
 
 	// Calculate center x and y (Centroids)
 	double x_object = mmts.m10 / mmts.m00;
-//	double y_object = mmts.m01 / mmts.m00;
+	double y_object = mmts.m01 / mmts.m00;
 
 	// Center of image
 	cv::Size size = imageSrc.size();
@@ -103,29 +110,33 @@ int main( int argc, char** argv ) {
 
 	// contour
 	Mat tmpDest = imageDest.clone();
-	Point point = edgePoint(tmpDest);
+	Point point = edgePoint(tmpDest, Point(x_center, y_center));
 
-	double diameter = norm(Point(x_center, y_center)- point)*2;
-	double realDiameter = 7.0;
+	double diameter = norm(Point(x_object, y_object)- point)*2;
+	double realDiameter = 6.5;
+
 	double distance = getDistance(realDiameter, diameter);
 
 	// Get rotation angle
 	double rotation_angle = atan((x_object - x_center)/distance) * 180 / PI;;
 
-	cout << "distance is: "<< distance << " "<< rotation_angle << endl;
+	cout << "distance is: "<< distance << " "<< rotation_angle << " "<< diameter <<  endl;
 
 	int n = system("echo test");
 
 	// Draw circle at x and y
-//	Mat tmpSource = imageSrc.clone();
-//	circle(tmpSource, Point(x_object,y_object), 10, Scalar(0, 120, 200), 10);
-//	circle(tmpSource, point, 10, Scalar(120, 0, 0), 10);
+	Mat tmpSource = imageSrc.clone();
+	circle(tmpSource, Point(x_object,y_object), 3, Scalar(229, 240, 76), 4);
+	circle(tmpSource, Point(x_object,y_object), diameter/2, Scalar(44, 252, 14), 5);
+
+	// Center
+	circle(tmpSource, Point(x_center,y_center), 10, Scalar(255, 255, 255), 10);
 
 	// Show images in windows
-//	imshow("Destination", imageDest);
-//	imshow("Source", tmpSource);
-//
-//	waitKey(50000);
+	imshow("Destination", imageDest);
+	imshow("Source", tmpSource);
+
+	waitKey(0);
 
 	return 0;
 }
