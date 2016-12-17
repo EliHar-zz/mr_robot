@@ -53,10 +53,12 @@ Capture using the camera found at `/dev/video0` and output the raw data on the S
 Speeding up the streaming:  
 https://trac.ffmpeg.org/wiki/How%20to%20speed%20up%20/%20slow%20down%20a%20video
 
-##### Take a picture
+##### Take a picture every 10 seconds
 ```
-avconv -f video4linux2 -s 1280x720 -i /dev/video0 -vframes 1 /root/out.jpg
+avconv -f video4linux2 -i /dev/v4l/by-id/usb-046d_HD_Pro_Webcam_C920_2A4F7FDF-video-index0 -vf fps=1/10 test%3d.jpeg
 ```
+- To change the delay to every 15 seconds, update fps=1/15
+- It doesn't work if we use /dev/video0 instead of /dev/v4l/by-id/usb-046d_HD_Pro_Webcam_C920_2A4F7FDF-video-index0
 
 ##### PC
 
