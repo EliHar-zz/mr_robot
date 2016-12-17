@@ -118,11 +118,13 @@ int main( int argc, char** argv ) {
 	double distance = getDistance(realDiameter, diameter);
 
 	// Get rotation angle
-	double rotation_angle = atan((x_object - x_center)/distance) * 180 / PI;;
+	int digitalDiff = x_object - x_center;
+	double realDiff = digitalDiff * (realDiameter / diameter);
+	double rotation_angle = atan(realDiff / distance) * 180 / PI;
 
 	cout << "distance is: "<< distance << " "<< rotation_angle << " "<< diameter <<  endl;
 
-	int n = system("echo test");
+	int n = system("ssh root@$BBB_IP \"/root/mr_robot/tools/lab/lab_5/write 255,255,255#\"");
 
 	// Draw circle at x and y
 	Mat tmpSource = imageSrc.clone();
