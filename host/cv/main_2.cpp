@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 #include <cstring>
 #include <opencv2/highgui/highgui.hpp>
@@ -6,6 +7,7 @@
 #include <vector>
 #include <math.h>
 #include <stdlib.h>
+#include <cstdlib>
 
 #define PI 3.14159265
 
@@ -16,6 +18,27 @@ double getDistance(double realDimention, double digitalDimention) {
 	double FOCAL_LENGTH = 948.6071428572; // in pixels
 	int ERROR_MARGIN = 18; //pixels lost due to selection of circular shape
 	return realDimention * FOCAL_LENGTH / (digitalDimention + ERROR_MARGIN);
+}
+
+void printCamConfig(VideoCapture &cam) {
+	cout << cam.get(CV_CAP_PROP_POS_MSEC) << endl;
+	cout << cam.get(CV_CAP_PROP_POS_FRAMES) << endl;
+	cout << cam.get(CV_CAP_PROP_POS_AVI_RATIO) << endl;
+	cout << cam.get(CV_CAP_PROP_FRAME_WIDTH) << endl;
+	cout << cam.get(CV_CAP_PROP_FRAME_HEIGHT) << endl;
+	cout << cam.get(CV_CAP_PROP_FPS) << endl;
+	cout << cam.get(CV_CAP_PROP_FOURCC) << endl;
+	cout << cam.get(CV_CAP_PROP_FRAME_COUNT) << endl;
+	cout << cam.get(CV_CAP_PROP_FORMAT) << endl;
+	cout << cam.get(CV_CAP_PROP_MODE) << endl;
+	cout << cam.get(CV_CAP_PROP_BRIGHTNESS) << endl;
+	cout << cam.get(CV_CAP_PROP_CONTRAST) << endl;
+	cout << cam.get(CV_CAP_PROP_SATURATION) << endl;
+	cout << cam.get(CV_CAP_PROP_HUE) << endl;
+	cout << cam.get(CV_CAP_PROP_GAIN) << endl;
+	cout << cam.get(CV_CAP_PROP_EXPOSURE) << endl;
+	cout << cam.get(CV_CAP_PROP_CONVERT_RGB) << endl;
+	cout << cam.get(CV_CAP_PROP_RECTIFICATION) << endl;	
 }
 
 Point edgePoint(Mat imageDest, Point def) {
@@ -61,12 +84,11 @@ void get_color_specs(vector<vector<int> > &specs, string color){
 }
 
 void drive(double angle, double distance) {
-	MAX_ANGLE = 45;
-	MIN_ANGLE = 0;
+	int MAX_ANGLE = 45;
 
-	PWM_RANGE = 55;
-	MIN_PWM = 200;
-	MAX_PWM = 255; // for back wheels (might be change to respect distace to cover)
+	int PWM_RANGE = 55;
+	int MIN_PWM = 200;
+	int MAX_PWM = 255; // for back wheels (might be change to respect distace to cover)
 
 	double fr_left, fr_right, back;
 
@@ -83,9 +105,9 @@ void drive(double angle, double distance) {
 
 		// Go left
 
-		fr_right = PWM_RANGE - (angle / MAX_ANGLE) * PWM_RANGE + MIN_PWM;
+		fr_right = PWM_RANGE - (-angle / MAX_ANGLE) * PWM_RANGE + MIN_PWM;
 
-		fr_left = (angle / MAX_ANGLE) * PWM_RANGE + MIN_PWM;
+		fr_left = (-angle / MAX_ANGLE) * PWM_RANGE + MIN_PWM;
 
 		back = MAX_PWM;
 	} else {
@@ -102,7 +124,9 @@ void drive(double angle, double distance) {
 		}
 	}
 
-	system("ssh root@$BBB_IP \"/root/mr_robot/tools/lab/lab_5/write" + fr_left + fr_right + back + "#\"");
+	string cmd = string("/root/mr_robot/tools/lab/lab_5/write ") + to_string((int)fr_left) + "," + to_string((int)fr_right) + "," + to_string((int)back) + string("#"); 
+	cout << cmd << endl;
+	system(cmd.c_str());
 }
 
 int main( int argc, char** argv ) {
@@ -114,6 +138,14 @@ int main( int argc, char** argv ) {
 
 	 if(!cap.open(cap_num))
 		 return 1;
+	//printCamConfig(cap);
+
+	// Configure cam
+	cap.set(CV_CAP_PROP_FRAME_WIDTH,320);
+	cap.set(CV_CAP_PROP_FRAME_HEIGHT,180);
+	// cap.set(CV_CAP_PROP_FRAME_COUNT, 100); // Not supported by cam
+	cap.set(CV_CAP_PROP_FOURCC, CV_FOURCC('H', '2', '6', '4'));
+
 
 	while(1) {
 		Mat imageSrc;
@@ -186,6 +218,13 @@ int main( int argc, char** argv ) {
 		circle(tmpSource, Point(x_center,y_center), 10, Scalar(255, 255, 255), 10);
 
 		imwrite("/var/www/html/mr_robot/out.jpg", tmpSource);
+		imwrite("/var/www/html/mr_robot/bw.jpg", imageDest);
+		ofstream myfile;
+		myfile.open ("/var/www/html/mr_robot/info.txt");
+		myfile << "Distance from camera: " << distance << " cm\n";
+		myfile << "Rotation angle: " << rotation_angle << "\n";
+		myfile << "Digital diameter: " << diameter << " cm\n";
+		myfile.close();
 
 		drive(rotation_angle, distance);
 	}
