@@ -60,6 +60,51 @@ void get_color_specs(vector<vector<int> > &specs, string color){
 	}
 }
 
+void drive(double angle, double distance) {
+	MAX_ANGLE = 45;
+	MIN_ANGLE = 0;
+
+	PWM_RANGE = 55;
+	MIN_PWM = 200;
+	MAX_PWM = 255; // for back wheels (might be change to respect distace to cover)
+
+	double fr_left, fr_right, back;
+
+	if (angle > 0){
+		
+		// Go right
+
+		fr_left = PWM_RANGE - (angle / MAX_ANGLE) * PWM_RANGE + MIN_PWM;
+
+		fr_right = (angle / MAX_ANGLE) * PWM_RANGE + MIN_PWM;
+
+		back = MAX_PWM;
+	} else if (angle < 0) {
+
+		// Go left
+
+		fr_right = PWM_RANGE - (angle / MAX_ANGLE) * PWM_RANGE + MIN_PWM;
+
+		fr_left = (angle / MAX_ANGLE) * PWM_RANGE + MIN_PWM;
+
+		back = MAX_PWM;
+	} else {
+		
+		// Go straight
+		if (distance >= 100.0) {
+			fr_right = MAX_PWM;
+			fr_left = MAX_PWM;
+			back = MAX_PWM;
+		} else {
+			fr_right = 200;
+			fr_left = 200;
+			back = 200;
+		}
+	}
+
+	system("ssh root@$BBB_IP \"/root/mr_robot/tools/lab/lab_5/write" + fr_left + fr_right + back + "#\"");
+}
+
 int main( int argc, char** argv ) {
 
 	int cap_num  = atoi(argv[1]);
@@ -141,9 +186,9 @@ int main( int argc, char** argv ) {
 		circle(tmpSource, Point(x_center,y_center), 10, Scalar(255, 255, 255), 10);
 
 		imwrite("/var/www/html/mr_robot/out.jpg", tmpSource);
-	}
-//	int n = system("ssh root@$BBB_IP \"/root/mr_robot/tools/lab/lab_5/write 255,255,255#\"");
 
+		drive(rotation_angle, distance);
+	}
 
 	// Show images in windows
 //	imshow("Destination", imageDest);
