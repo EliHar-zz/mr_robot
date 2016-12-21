@@ -14,31 +14,12 @@
 using namespace cv;
 using namespace std;
 
+long frameNumber = 0;
+
 double getDistance(double realDimention, double digitalDimention) {
 	double FOCAL_LENGTH = 948.6071428572; // in pixels
 	int ERROR_MARGIN = 18; //pixels lost due to selection of circular shape
 	return realDimention * FOCAL_LENGTH / (digitalDimention + ERROR_MARGIN);
-}
-
-void printCamConfig(VideoCapture &cam) {
-	cout << cam.get(CV_CAP_PROP_POS_MSEC) << endl;
-	cout << cam.get(CV_CAP_PROP_POS_FRAMES) << endl;
-	cout << cam.get(CV_CAP_PROP_POS_AVI_RATIO) << endl;
-	cout << cam.get(CV_CAP_PROP_FRAME_WIDTH) << endl;
-	cout << cam.get(CV_CAP_PROP_FRAME_HEIGHT) << endl;
-	cout << cam.get(CV_CAP_PROP_FPS) << endl;
-	cout << cam.get(CV_CAP_PROP_FOURCC) << endl;
-	cout << cam.get(CV_CAP_PROP_FRAME_COUNT) << endl;
-	cout << cam.get(CV_CAP_PROP_FORMAT) << endl;
-	cout << cam.get(CV_CAP_PROP_MODE) << endl;
-	cout << cam.get(CV_CAP_PROP_BRIGHTNESS) << endl;
-	cout << cam.get(CV_CAP_PROP_CONTRAST) << endl;
-	cout << cam.get(CV_CAP_PROP_SATURATION) << endl;
-	cout << cam.get(CV_CAP_PROP_HUE) << endl;
-	cout << cam.get(CV_CAP_PROP_GAIN) << endl;
-	cout << cam.get(CV_CAP_PROP_EXPOSURE) << endl;
-	cout << cam.get(CV_CAP_PROP_CONVERT_RGB) << endl;
-	cout << cam.get(CV_CAP_PROP_RECTIFICATION) << endl;	
 }
 
 Point edgePoint(Mat imageDest, Point def) {
@@ -124,9 +105,9 @@ void drive(double angle, double distance) {
 		}
 	}
 
-	string cmd = string("/root/mr_robot/tools/lab/lab_5/write ") + to_string((int)fr_left) + "," + to_string((int)fr_right) + "," + to_string((int)back) + string("#"); 
-	cout << cmd << endl;
-	system(cmd.c_str());
+	//string cmd = string("/root/mr_robot/tools/lab/lab_5/write ") + to_string((int)fr_left) + "," + to_string((int)fr_right) + "," + to_string((int)back) + string("#"); 
+	//cout << cmd << endl;
+	//system(cmd.c_str());
 }
 
 int main( int argc, char** argv ) {
@@ -138,14 +119,14 @@ int main( int argc, char** argv ) {
 
 	 if(!cap.open(cap_num))
 		 return 1;
-	//printCamConfig(cap);
+
+	Mat santaRGB;
+	santaRGB = imread("/var/www/html/mr_robot/santa.png", CV_LOAD_IMAGE_COLOR);
 
 	// Configure cam
-	cap.set(CV_CAP_PROP_FRAME_WIDTH,320);
-	cap.set(CV_CAP_PROP_FRAME_HEIGHT,180);
-	// cap.set(CV_CAP_PROP_FRAME_COUNT, 100); // Not supported by cam
-	cap.set(CV_CAP_PROP_FOURCC, CV_FOURCC('H', '2', '6', '4'));
-
+	cap.set(CV_CAP_PROP_FRAME_WIDTH, 432);
+	cap.set(CV_CAP_PROP_FRAME_HEIGHT,240);
+	cap.set(CV_CAP_PROP_FPS , 30);
 
 	while(1) {
 		Mat imageSrc;
@@ -174,12 +155,12 @@ int main( int argc, char** argv ) {
 		inRange(imageDest, Scalar(lowH, lowS, lowV), Scalar(highH, highS, highV), imageDest);
 
 		// Morphological opening
-		erode(imageDest, imageDest, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)) );
-		dilate(imageDest, imageDest, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)) );
+	//	erode(imageDest, imageDest, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)) );
+	//	dilate(imageDest, imageDest, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)) );
 
-		// Morphological closing
-		dilate(imageDest, imageDest, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)) );
-		erode(imageDest, imageDest, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)) );
+	//	// Morphological closing
+	//	dilate(imageDest, imageDest, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)) );
+	//	erode(imageDest, imageDest, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)) );
 
 		// Create moment
 		Moments mmts = moments(imageDest);
@@ -211,11 +192,19 @@ int main( int argc, char** argv ) {
 
 		// Draw circle at x and y
 		Mat tmpSource = imageSrc.clone();
-		circle(tmpSource, Point(x_object,y_object), 3, Scalar(229, 240, 76), 4);
-		circle(tmpSource, Point(x_object,y_object), diameter/2, Scalar(44, 252, 14), 5);
+		circle(tmpSource, Point(x_object,y_object), 3, Scalar(229, 240, 76), 2);
+		circle(tmpSource, Point(x_object,y_object), diameter/2, Scalar(44, 252, 14), 3);
+		//cout << tmpSource.channels() << endl;
 
+		cout << x_object << "x" << y_object << endl;
+		cout << "Santa size: " << santaRGB.rows << "x" << santaRGB.cols << endl;
+		cout << "Image size: " << tmpSource.rows << "x" << tmpSource.cols << endl;
+
+		if(y_object < tmpSource.rows - santaRGB.rows && x_object < tmpSource.cols - santaRGB.cols) {
+			santaRGB.copyTo(tmpSource(cv::Rect(x_object,y_object,santaRGB.cols, santaRGB.rows)));
+		}
 		// Center
-		circle(tmpSource, Point(x_center,y_center), 10, Scalar(255, 255, 255), 10);
+		circle(tmpSource, Point(x_center,y_center), 2, Scalar(255, 255, 255), 2);
 
 		imwrite("/var/www/html/mr_robot/out.jpg", tmpSource);
 		imwrite("/var/www/html/mr_robot/bw.jpg", imageDest);
@@ -224,6 +213,7 @@ int main( int argc, char** argv ) {
 		myfile << "Distance from camera: " << distance << " cm\n";
 		myfile << "Rotation angle: " << rotation_angle << "\n";
 		myfile << "Digital diameter: " << diameter << " cm\n";
+		myfile << "Frame number: " << ++frameNumber << "\n";
 		myfile.close();
 
 		drive(rotation_angle, distance);
