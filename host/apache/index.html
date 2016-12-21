@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<body>
+
+<h1>Mr. Robot</h1>
+<p>
+    <canvas width="432" height="240" id="out"></canvas>
+    <canvas width="432" height="240" id="bw"></canvas>
+</p>
+<p>
+    <iframe style="border:none;" name="info" id="info" src="info.txt"></iframe>
+</p>
+<script type="text/JavaScript">
+    
+    var outImg = new Image();
+    var bwImg = new Image();
+    var periodTime = 100;
+
+    function updateImages() {
+        outImg.src = 'out.jpg?d=' + Date.now();
+        bwImg.src = 'bw.jpg?d=' + Date.now();
+        var outContext = document.getElementById("out").getContext("2d");
+        var bwContext = document.getElementById("bw").getContext("2d");
+        outContext.drawImage(outImg, 0, 0);
+        bwContext.drawImage(bwImg, 0, 0);
+
+        setTimeout(updateImages, periodTime);
+    }
+    updateImages();
+
+    window.setInterval("reloadIFrame();", periodTime);
+    function reloadIFrame(){
+          document.getElementById("info").contentWindow.location.reload();
+    }
+</script>
+</body>
+</html>
