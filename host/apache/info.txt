@@ -1,0 +1,6 @@
+Distance from camera: 4.45985 cm
+Rotation angle: 0
+Digital diameter: 0 px
+Frame number: 6023
+Direction: Reversing
+DIR_CODE: 5

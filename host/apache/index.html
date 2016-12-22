@@ -1,38 +1,109 @@
 <!DOCTYPE html>
 <html>
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<head>
+	<script src="jquery.min.js"></script>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<style>
+	body{
+		font-family: "arial";
+	}
+	</style>
+</head>
 <body>
 
 <h1>Mr. Robot</h1>
 <p>
-    <canvas width="432" height="240" id="out"></canvas>
-    <canvas width="432" height="240" id="bw"></canvas>
+	<canvas width="432" height="240" id="out"></canvas>
+	<canvas width="432" height="240" id="bw"></canvas>
 </p>
 <p>
-    <iframe style="border:none;" name="info" id="info" src="info.txt"></iframe>
+	<pre id="info"></pre>
 </p>
 <script type="text/JavaScript">
-    
-    var outImg = new Image();
-    var bwImg = new Image();
-    var periodTime = 100;
+	
+	// Main images
+	var outImg = new Image();
+	var bwImg = new Image();
+	
+	// Refresh rate
+	var periodTime = 100;
+	
+	// Directions
+	var stopSign = new Image();
+	var leftSign = new Image();
+	var rightSign = new Image();
+	var fsSign = new Image();
+	var hsSign = new Image();
+	var revSign = new Image();
 
-    function updateImages() {
-        outImg.src = 'out.jpg?d=' + Date.now();
-        bwImg.src = 'bw.jpg?d=' + Date.now();
-        var outContext = document.getElementById("out").getContext("2d");
-        var bwContext = document.getElementById("bw").getContext("2d");
-        outContext.drawImage(outImg, 0, 0);
-        bwContext.drawImage(bwImg, 0, 0);
+	// Canvases
+	var outContext = document.getElementById("out").getContext("2d");
+	var bwContext = document.getElementById("bw").getContext("2d");
 
-        setTimeout(updateImages, periodTime);
-    }
-    updateImages();
+	// Eelements
+	var infoContent = document.getElementById("info");
 
-    window.setInterval("reloadIFrame();", periodTime);
-    function reloadIFrame(){
-          document.getElementById("info").contentWindow.location.reload();
-    }
+	// Directions
+	var DIR_FULL_SPEED = 0;
+	var DIR_LEFT = 1;
+	var DIR_RIGHT = 2;
+	var DIR_HALF_SPEED = 3;
+	var DIR_STOP = 4;
+	var DIR_REVERSE = 5;
+
+	// Direction images
+	stopSign.src = 'stop.png';
+	leftSign.src = 'left.png';
+	rightSign.src = 'right.png';
+	fsSign.src = 'fs.png';
+	hsSign.src = 'hs.png';
+	revSign.src = 'rev.png';
+
+	// Update images
+	function updateImages() {
+
+		// Load images
+		outImg.src = 'out.jpg?d=' + Date.now();
+		bwImg.src = 'bw.jpg?d=' + Date.now();
+
+		// Draw images
+		outContext.drawImage(outImg, 0, 0);
+		bwContext.drawImage(bwImg, 0, 0);
+
+		// Draw arrows
+		var infoText = infoContent.innerText;
+		var dir_regex = /.*DIR_CODE: (\d)\b/;
+		var dir_code = infoText.match(dir_regex);
+
+		if(dir_code != null && dir_code.length == 2) {
+			var code = dir_code[1];
+			if(code == DIR_FULL_SPEED) {
+				outContext.drawImage(fsSign, 10, 10, 40, 40);
+			} else if(code == DIR_HALF_SPEED) {
+				outContext.drawImage(hsSign, 10, 10, 40, 40);
+			} else if(code == DIR_RIGHT) {
+				outContext.drawImage(rightSign, 10, 10, 40, 40);
+			} else if(code == DIR_LEFT) {
+				outContext.drawImage(leftSign, 10, 10, 40, 40);
+			} else if(code == DIR_REVERSE) {
+				outContext.drawImage(revSign, 10, 10, 40, 40);
+			} else if(code == DIR_STOP) {
+				outContext.drawImage(stopSign, 10, 10, 40, 40);
+			}
+		}
+
+		setTimeout(updateImages, periodTime);
+	}
+	updateImages();
+
+	setInterval(function() {
+		$.ajax({
+			url : "info.txt",
+			success : function (data) {
+				$("#info").html(data);
+			}
+		});
+	}, periodTime);
 </script>
 </body>
 </html>
