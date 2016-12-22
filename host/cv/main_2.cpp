@@ -8,6 +8,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <cstdlib>
+#include <sstream>
 
 #define PI 3.14159265
 
@@ -16,9 +17,17 @@ using namespace std;
 
 long frameNumber = 0;
 
+// Directions
+const int DIR_FULL_SPEED = 0;
+const int DIR_LEFT = 1;
+const int DIR_RIGHT = 2;
+const int DIR_HALF_SPEED = 3;
+const int DIR_STOP = 4;
+const int DIR_REVERSE = 5;
+
 double getDistance(double realDimention, double digitalDimention) {
-	double FOCAL_LENGTH = 948.6071428572; // in pixels
-	int ERROR_MARGIN = 18; //pixels lost due to selection of circular shape
+	double FOCAL_LENGTH = 339.079; // in pixels
+	int ERROR_MARGIN = 0; //pixels lost due to selection of circular shape
 	return realDimention * FOCAL_LENGTH / (digitalDimention + ERROR_MARGIN);
 }
 
@@ -64,50 +73,67 @@ void get_color_specs(vector<vector<int> > &specs, string color){
 	}
 }
 
-void drive(double angle, double distance) {
-	int MAX_ANGLE = 45;
-
-	int PWM_RANGE = 55;
-	int MIN_PWM = 200;
-	int MAX_PWM = 255; // for back wheels (might be change to respect distace to cover)
+int drive(double angle, double distance, double diameter) {
+	int FULL_SPEED = 255;
+	int HALF_SPEED = 220;
+	int STOPPED = 0;
+	int STOPPING_DISTANCE = 30;
 
 	double fr_left, fr_right, back;
+	int direction;
 
-	if (angle > 0){
+	// If no object found, reverse
+	if(diameter == 0) {
+		fr_left = -FULL_SPEED;	
+		fr_right = -FULL_SPEED;	
+		back = -FULL_SPEED;
+		direction = DIR_REVERSE;
+
+	// If object is within 30 cm, stop
+	} else if(distance <= STOPPING_DISTANCE) {
+		fr_left = STOPPED;
+		back = STOPPED;
+		direction = DIR_STOP;
+
+	// If object more than 2 degrees to right, turn right
+	} else if (angle > 2){
+		fr_left = FULL_SPEED;
+		fr_right = STOPPED;
+		back = HALF_SPEED;
+		direction = DIR_RIGHT;
+
+	// If object more than 2 degrees to left, turn left
+	} else if (angle < -2) {
+		fr_right = FULL_SPEED;
+		fr_left = STOPPED;
+		back = HALF_SPEED;
+		direction = DIR_LEFT;
 		
-		// Go right
-
-		fr_left = PWM_RANGE - (angle / MAX_ANGLE) * PWM_RANGE + MIN_PWM;
-
-		fr_right = (angle / MAX_ANGLE) * PWM_RANGE + MIN_PWM;
-
-		back = MAX_PWM;
-	} else if (angle < 0) {
-
-		// Go left
-
-		fr_right = PWM_RANGE - (-angle / MAX_ANGLE) * PWM_RANGE + MIN_PWM;
-
-		fr_left = (-angle / MAX_ANGLE) * PWM_RANGE + MIN_PWM;
-
-		back = MAX_PWM;
+	// Ball must be directly ahead, drive straight
 	} else {
 		
-		// Go straight
-		if (distance >= 100.0) {
-			fr_right = MAX_PWM;
-			fr_left = MAX_PWM;
-			back = MAX_PWM;
-		} else {
-			fr_right = 200;
-			fr_left = 200;
-			back = 200;
+		// If ball is greater than 50cm, go full speed
+		if (distance > 50.0) {
+			fr_right = FULL_SPEED;
+			fr_left = FULL_SPEED;
+			back = FULL_SPEED;
+			direction = DIR_FULL_SPEED;
+
+		// If ball is (30, 50] cm away, approach at slower pace
+		} else if(distance > STOPPING_DISTANCE) {
+			fr_right = HALF_SPEED;
+			fr_left = HALF_SPEED;
+			back = HALF_SPEED;
+			direction = DIR_HALF_SPEED;
 		}
 	}
 
-	//string cmd = string("/root/mr_robot/tools/lab/lab_5/write ") + to_string((int)fr_left) + "," + to_string((int)fr_right) + "," + to_string((int)back) + string("#"); 
-	//cout << cmd << endl;
-	//system(cmd.c_str());
+	stringstream s;
+	s << "/root/mr_robot/tools/lab/lab_5/write " << (int)fr_left << "," << (int)fr_right << "," << (int)back << "#";
+	string cmd = s.str();
+	cout << cmd << endl;
+	system(cmd.c_str());
+	return direction;
 }
 
 int main( int argc, char** argv ) {
@@ -119,9 +145,6 @@ int main( int argc, char** argv ) {
 
 	 if(!cap.open(cap_num))
 		 return 1;
-
-	Mat santaRGB;
-	santaRGB = imread("/var/www/html/mr_robot/santa.png", CV_LOAD_IMAGE_COLOR);
 
 	// Configure cam
 	cap.set(CV_CAP_PROP_FRAME_WIDTH, 432);
@@ -155,12 +178,12 @@ int main( int argc, char** argv ) {
 		inRange(imageDest, Scalar(lowH, lowS, lowV), Scalar(highH, highS, highV), imageDest);
 
 		// Morphological opening
-	//	erode(imageDest, imageDest, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)) );
-	//	dilate(imageDest, imageDest, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)) );
+		erode(imageDest, imageDest, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)) );
+		dilate(imageDest, imageDest, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)) );
 
-	//	// Morphological closing
-	//	dilate(imageDest, imageDest, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)) );
-	//	erode(imageDest, imageDest, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)) );
+		// Morphological closing
+		dilate(imageDest, imageDest, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)) );
+		erode(imageDest, imageDest, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)) );
 
 		// Create moment
 		Moments mmts = moments(imageDest);
@@ -188,23 +211,22 @@ int main( int argc, char** argv ) {
 		double realDiff = digitalDiff * (realDiameter / diameter);
 		double rotation_angle = atan(realDiff / distance) * 180 / PI;
 
+		// Detection threshold
+		if(isnan((double)x_object) && isnan((double)y_object)) {
+			diameter = 0.0;;
+		}
+
 		cout << "distance is: "<< distance << " "<< rotation_angle << " "<< diameter <<  endl;
 
 		// Draw circle at x and y
 		Mat tmpSource = imageSrc.clone();
 		circle(tmpSource, Point(x_object,y_object), 3, Scalar(229, 240, 76), 2);
 		circle(tmpSource, Point(x_object,y_object), diameter/2, Scalar(44, 252, 14), 3);
-		//cout << tmpSource.channels() << endl;
 
-		cout << x_object << "x" << y_object << endl;
-		cout << "Santa size: " << santaRGB.rows << "x" << santaRGB.cols << endl;
-		cout << "Image size: " << tmpSource.rows << "x" << tmpSource.cols << endl;
-
-		if(y_object < tmpSource.rows - santaRGB.rows && x_object < tmpSource.cols - santaRGB.cols) {
-			santaRGB.copyTo(tmpSource(cv::Rect(x_object,y_object,santaRGB.cols, santaRGB.rows)));
-		}
 		// Center
 		circle(tmpSource, Point(x_center,y_center), 2, Scalar(255, 255, 255), 2);
+
+		int direction = drive(rotation_angle, distance, diameter);
 
 		imwrite("/var/www/html/mr_robot/out.jpg", tmpSource);
 		imwrite("/var/www/html/mr_robot/bw.jpg", imageDest);
@@ -212,18 +234,34 @@ int main( int argc, char** argv ) {
 		myfile.open ("/var/www/html/mr_robot/info.txt");
 		myfile << "Distance from camera: " << distance << " cm\n";
 		myfile << "Rotation angle: " << rotation_angle << "\n";
-		myfile << "Digital diameter: " << diameter << " cm\n";
+		myfile << "Digital diameter: " << diameter << " px\n";
 		myfile << "Frame number: " << ++frameNumber << "\n";
+
+		string dir_message = "Direction: ";
+		switch(direction) {
+			case DIR_REVERSE:
+				myfile << dir_message << "Reversing"  << "\n";
+				break;
+			case DIR_FULL_SPEED:
+				myfile << dir_message << "Full speed"  << "\n";
+				break;
+			case DIR_HALF_SPEED:
+				myfile << dir_message << "Half speed"  << "\n";
+				break;
+			case DIR_RIGHT:
+				myfile << dir_message << "Right"  << "\n";
+				break;
+			case DIR_LEFT:
+				myfile << dir_message << "Left"  << "\n";
+				break;
+			case DIR_STOP:
+				myfile << dir_message << "Stop"  << "\n";
+				break;
+		} 
+		myfile << "DIR_CODE: " << direction << "\n";
 		myfile.close();
 
-		drive(rotation_angle, distance);
 	}
-
-	// Show images in windows
-//	imshow("Destination", imageDest);
-//	imshow("Source", tmpSource);
-
-//	waitKey(0);
 
 	return 0;
 }
