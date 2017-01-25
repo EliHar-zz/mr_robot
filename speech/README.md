@@ -1,5 +1,3 @@
-Original repo: https://github.com/GoogleCloudPlatform/java-docs-samples/tree/master/speech
-
 Google Repo:
 * Clone https://github.com/GoogleCloudPlatform/java-docs-samples
 * cd speech/gprc
