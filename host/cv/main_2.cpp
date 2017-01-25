@@ -1,3 +1,31 @@
+/**
+* OpenCV (OCV) - Video capture on BBB
+*
+* GOAL:
+* This program takes continuous images from the host camera and detect a circular
+* object of specific color. The color and other configuration are provided as 
+* input argument to the program.
+*
+* INPUT:
+* The program takes two arguments: 
+* - The video device node (0/1)
+* - The object color (blue/red)
+*
+* OUTPUT:
+* On each frame captured by the program, three files are exported into the 
+* host filesystem (apache directory specifically):
+* - A colored image with a green circular around the circular object
+* - A binarized image of the colored image (previous bullet)
+* - A text file containing information about the object captured
+* In addition to storing images, at each frame iteration, the program executes a shell script
+* to communicate information about the frame with the ATMEGA328.
+*
+* HOST REQUIREMENTS:
+* The following packages are required to be installed on the host:
+* - Apache2 server
+* - OpenSSH server
+**/
+
 #include <fstream>
 #include <iostream>
 #include <cstring>
@@ -15,9 +43,12 @@
 using namespace cv;
 using namespace std;
 
+// Keep track of video camera frame number
 long frameNumber = 0;
 
-// Directions
+// Assign unique ID for each direction. 
+// The ID must be in sync with the GUI direction values 
+// (Please refer to the documentation for more information about the GUI code)
 const int DIR_FULL_SPEED = 0;
 const int DIR_LEFT = 1;
 const int DIR_RIGHT = 2;
@@ -25,28 +56,54 @@ const int DIR_HALF_SPEED = 3;
 const int DIR_STOP = 4;
 const int DIR_REVERSE = 5;
 
+/**
+* Get the distance between the object and the camera
+* Please refer to the documentation report for more information 
+* about the calculations
+* @return Distance in cm
+**/
 double getDistance(double realDimention, double digitalDimention) {
 	double FOCAL_LENGTH = 339.079; // in pixels
 	int ERROR_MARGIN = 0; //pixels lost due to selection of circular shape
 	return realDimention * FOCAL_LENGTH / (digitalDimention + ERROR_MARGIN);
 }
 
+/**
+* Detect the edge point of the object. This information allows the 
+* conclusion of the object digial radius
+* @param imageDest Current video frame
+* @param def Default point value in case no object was found
+* @return arbitrary point on the object edge
+**/
 Point edgePoint(Mat imageDest, Point def) {
 	int thresh = 100;
 
+	// Canny Algorithm for object edge detection 
 	Canny(imageDest, imageDest, thresh /*threshold1*/, thresh*2 /*threshold2*/, 3/*apertureSize*/);
 
+	// Prepare data structure to store the edge points
 	vector<vector<Point> > contours;
 	vector<Vec4i> hierarchy;
 
+	// Perform the countour finder
 	findContours(imageDest, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
 
+	// If no object foud, return the provided default value
 	if(contours.size() == 0) {
 		return def;
 	}
+	
+	// Return a point from the countour
 	return contours[0][0];
 }
 
+/**
+* Predefined set of colors that can be detected by the program
+* The colors supported by the current program are blue and red 
+* @param specs Data strucutre to hold the HSV channel color information
+* based on the color specified
+* @param color Color of the object (blue/red)
+**/
 void get_color_specs(vector<vector<int> > &specs, string color){
 
 	if (!color.compare("blue")) {
@@ -73,12 +130,25 @@ void get_color_specs(vector<vector<int> > &specs, string color){
 	}
 }
 
+/**
+* Drive the car based on the angle and distance
+* Decisions are mainly taken based on experiments
+* @param angle Car angel
+* @param distance Distance of the car from the camera
+* @param diameter Digital diameter of the circular object
+* @return Direction code
+**/
 int drive(double angle, double distance, double diameter) {
+	
+	// Speeds values
 	int FULL_SPEED = 255;
 	int HALF_SPEED = 220;
 	int STOPPED = 0;
+	
+	// Distance threshold
 	int STOPPING_DISTANCE = 30;
 
+	// Wheels speeds variables
 	double fr_left, fr_right, back;
 	int direction;
 
@@ -128,6 +198,9 @@ int drive(double angle, double distance, double diameter) {
 		}
 	}
 
+	// Execute shell command to drive the car
+	// The file /root/mr_robot/tools/lab/lab_5/write can be found at 
+	// https://github.com/EliHar/mr_robot/blob/master/tools/lab/lab_5/write.c
 	stringstream s;
 	s << "/root/mr_robot/tools/lab/lab_5/write " << (int)fr_left << "," << (int)fr_right << "," << (int)back << "#";
 	string cmd = s.str();
@@ -136,25 +209,35 @@ int drive(double angle, double distance, double diameter) {
 	return direction;
 }
 
+/**
+* Start the OpenCV program
+**/
 int main( int argc, char** argv ) {
 
+	// Capture video number is: /dev/video(0/1)
 	int cap_num  = atoi(argv[1]);
+	
+	// Color blue/red
 	string color = argv[2];
 
+	// Start camera
 	 VideoCapture cap;
-
 	 if(!cap.open(cap_num))
 		 return 1;
 
-	// Configure cam
+	// Configure the camera for fast capture and good resolution
 	cap.set(CV_CAP_PROP_FRAME_WIDTH, 432);
 	cap.set(CV_CAP_PROP_FRAME_HEIGHT,240);
 	cap.set(CV_CAP_PROP_FPS , 30);
 
+	// Keep taking pictures
 	while(1) {
+		
+		// Store the frame in a matrix
 		Mat imageSrc;
 		cap >> imageSrc;
 
+		// Fetch the color information
 		vector<vector<int> > color_specs(2, vector<int>(3));
 		get_color_specs(color_specs, color);
 
@@ -197,13 +280,15 @@ int main( int argc, char** argv ) {
 		double x_center = size.width/2.0f;
 		double y_center = size.height/2.0f;
 
-		// contour
+		// Contour
 		Mat tmpDest = imageDest.clone();
 		Point point = edgePoint(tmpDest, Point(x_center, y_center));
 
+		// Calculate digital diameter in cm
 		double diameter = norm(Point(x_object, y_object)- point)*2;
 		double realDiameter = 6.5;
 
+		// Calculate the real distance
 		double distance = getDistance(realDiameter, diameter);
 
 		// Get rotation angle
@@ -211,11 +296,12 @@ int main( int argc, char** argv ) {
 		double realDiff = digitalDiff * (realDiameter / diameter);
 		double rotation_angle = atan(realDiff / distance) * 180 / PI;
 
-		// Detection threshold
+		// If no object found, then diameter is set to zero
 		if(isnan((double)x_object) && isnan((double)y_object)) {
 			diameter = 0.0;;
 		}
 
+		// Log the calculated information
 		cout << "distance is: "<< distance << " "<< rotation_angle << " "<< diameter <<  endl;
 
 		// Draw circle at x and y
@@ -226,8 +312,13 @@ int main( int argc, char** argv ) {
 		// Center
 		circle(tmpSource, Point(x_center,y_center), 2, Scalar(255, 255, 255), 2);
 
+		// Get direction code
 		int direction = drive(rotation_angle, distance, diameter);
 
+		// Write images and text into the file system/
+		// Director /var/www/html correspond to the path for
+		// Apache2 server. All files placed in this directory will be 
+		// accessible on all users in the network over host IP and port 80
 		imwrite("/var/www/html/mr_robot/out.jpg", tmpSource);
 		imwrite("/var/www/html/mr_robot/bw.jpg", imageDest);
 		ofstream myfile;
@@ -260,8 +351,6 @@ int main( int argc, char** argv ) {
 		} 
 		myfile << "DIR_CODE: " << direction << "\n";
 		myfile.close();
-
 	}
-
 	return 0;
 }
