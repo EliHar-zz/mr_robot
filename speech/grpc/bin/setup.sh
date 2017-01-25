@@ -5,12 +5,12 @@ print_usage() {
 Google Speech Recognition API - SETUP
 
 Usage:
-    $0 /path/to/your/credentials-key.json
+    source setup.sh /path/to/your/credentials-key.json
 EOF
 }
 
 export_env() {
-    if [[ ${#@} < 1 ]]
+    if [[ -z "$1" ]] || [ "$(echo "$0" | awk '{print $1}')" != "bash" ]
     then
         print_usage
     else
@@ -20,4 +20,4 @@ export_env() {
     fi
 }
 
-export_env "$1"
+export_env $@
