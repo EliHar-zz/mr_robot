@@ -13,6 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# File modified, original file can be found at: https://github.com/GoogleCloudPlatform/java-docs-samples/tree/master/speech/grpc/bin
+
+if [[ -z "$GOOGLE_APPLICATION_CREDENTIALS" ]]
+then
+    echo You should first run the setup script
+    exit 1
+fi
+
 SRC_DIR="$( cd "$( dirname "$0" )/.." && pwd )"
 java -cp "${SRC_DIR}/target/grpc-sample-1.0-jar-with-dependencies.jar" \
     com.examples.cloud.speech.StreamingRecognizeClient "$@"
