@@ -1,8 +1,13 @@
 Original repo: https://github.com/GoogleCloudPlatform/java-docs-samples/tree/master/speech
 
-Steps for using this:
+Google Repo:
+* Clone https://github.com/GoogleCloudPlatform/java-docs-samples
+* cd speech/gprc
+* Replace the bin folder by the one in this repo
+
+Steps for using Google Repo:
 * Install Java
-* export GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/credentials-key.json
+* Run the setup.sh in the new bin directory
 * mvn package
 * mvn compile
 * mvn assembly:single
