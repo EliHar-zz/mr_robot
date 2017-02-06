@@ -73,7 +73,7 @@ void UART_setup() {
     // Set frame: 8data, 1 stp
     UCSR0C |= (1 << UCSZ01) | (1 << UCSZ00);
 
-    sendMessage("   >> Initializing UART ...");
+    sendMessage("   >> Initializing UART ...\n");
 }
 
 /*
@@ -131,7 +131,7 @@ void sendInt(int num) {
 //************************ Control car ***********************************
 void init_wheels() {
 
-    sendMessage("   >> Initializing wheels ...");
+    sendMessage("   >> Initializing wheels ...\n");
 
 	// Set left wheels as output
 	DDRD |= (1 << PD2);
@@ -157,14 +157,27 @@ void init_wheels() {
     DDRB |= (1 << PB7);
     TCCR0A = (1 << WGM00) | (1 << WGM01) | (1 << COM0A1);
     TCCR0B = (1 << CS00) | (1 << CS01);
-    OCR0A = 255;
+    // OCR0A = 255;
 
-	TCCR2A = (1 << WGM20) | (1 << WGM21) | (1 << COM2A1) | (1 << COM2B1);
-	TCCR2B = (1 << CS20);
+	// TCCR2A = (1 << WGM20) | (1 << WGM21) | (1 << COM2A1) | (1 << COM2B1);
+	// TCCR2B = (1 << CS20);
 
 	// TCCR0A |= (1 << COM0A1);
 	// TCCR0A |= (1 << WGM01) | (1 << WGM00);
 	// TCCR0B |= (1 << CS01);
+
+	// TCCR0A |= (1 << COM0A1); // Clear OC0A on Compare Match
+    // TCCR0A |= (1 << COM0B1); // Clear OC0B on Compare Match
+    // 
+    // TCCR0A |= (1 << WGM00)|(1 << WGM01); //MOO: Fast PWM, 8-bit
+    // 
+    // TCCR0B |= (1 << CS00); //clk/1 (No prescaling)
+    // 
+    // TCNT0  = 0xFF; // set value to compare OCR1x too
+    // 
+    // OCR0B = 0x00; // set OCR0B to... //in charge of PD5 (left wheel)
+    // 
+    // OCR0A = 0x00; // set OCR0A to... //in charge of PD6 (right wheel)
 }
 
 void power_left_wheel(enum direction dir, uint8_t duty) {
@@ -215,6 +228,7 @@ void power_right_wheel(enum direction dir, uint8_t duty) {
 			PORTC &= (0 << PC2);
 			PORTC &= (0 << PC0);
 	}
+
 	OCR0A = duty;
 }
 
@@ -240,7 +254,7 @@ void set_wheels(int left_wheel, int right_wheel){
 // spi functions
 void spi_init_slave (void) {
 
-   sendMessage("    >> Initializing slave"); 
+   sendMessage("    >> Initializing slave\n"); 
     DDRB=(1<<6);                                  //MISO as OUTPUT
     SPCR=(1<<SPE);                                //Enable SPI
 }
@@ -318,7 +332,7 @@ void parse_message(char *msg, int *nums) {
 
 int main(void) {
 
-    
+	start_timer();
 	UART_setup();
 	init_wheels();
     spi_init_slave();
@@ -327,6 +341,8 @@ int main(void) {
     while(1) {
 
 		sendMessage("\nAwaiting message\n");
+		sendInt(OCR0A);
+		sendInt(OCR0B);
         int index = 0;
 
 		do {
