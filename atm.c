@@ -42,6 +42,8 @@ ISR(TIMER1_OVF_vect) {
 
 //***************************  UART  *****************************
 void UART_setup() {
+
+    sendMessage("   >> Initializing UART ...");
 	/*Set baud rate */
 	UBRR0H  = (BAUD_PRESCALE >> 8);
 	UBRR0L  = BAUD_PRESCALE;
@@ -126,6 +128,8 @@ void sendInt(int num) {
 
 //************************ Control car ***********************************
 void init_wheels() {
+
+    sendMessage("   >> Initializing wheels ...");
 
 	// Set left wheels as output
 	DDRD |= (1 << PD2);
@@ -226,6 +230,8 @@ void set_wheels(int left_wheel, int right_wheel){
 //**************************** SPI **************************************
 // spi functions
 void spi_init_slave (void) {
+
+   sendMessage("    >> Initializing slave"); 
     DDRB=(1<<6);                                  //MISO as OUTPUT
     SPCR=(1<<SPE);                                //Enable SPI
 }
@@ -303,6 +309,8 @@ void parse_message(char *msg, int *nums) {
 
 int main(void) {
 
+    
+    sendMessage("Program started!");
 	UART_setup();
 	init_wheels();
     spi_init_slave();
