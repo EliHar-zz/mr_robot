@@ -1,4 +1,4 @@
-
+#!/bin/bash
 # Used to flash a C program to the Atmega328p
 function flash() {
 
