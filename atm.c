@@ -65,7 +65,6 @@ void sendMessage(char msg[]) {
 //***************************  UART  *****************************
 void UART_setup() {
 
-    sendMessage("   >> Initializing UART ...");
 	/*Set baud rate */
 	UBRR0H  = (BAUD_PRESCALE >> 8);
 	UBRR0L  = BAUD_PRESCALE;
@@ -73,6 +72,8 @@ void UART_setup() {
     UCSR0B |= (1 << RXEN0) | (1 << TXEN0);
     // Set frame: 8data, 1 stp
     UCSR0C |= (1 << UCSZ01) | (1 << UCSZ00);
+
+    sendMessage("   >> Initializing UART ...");
 }
 
 /*
@@ -151,6 +152,7 @@ void init_wheels() {
 	// Non Inverted PWM output mode
 	TCCR0A = (1 << WGM00) | (1 << WGM01) | (1 << COM0A1) | (1 << COM0B1);
 	TCCR0B = (1 << CS00) | (1 << CS02);
+    TIMSK0 = (1 << OCIE0A);
 
 	TCCR2A = (1 << WGM20) | (1 << WGM21) | (1 << COM2A1) | (1 << COM2B1);
 	TCCR2B = (1 << CS20);
@@ -215,6 +217,7 @@ void power_right_wheel(enum direction dir, uint8_t duty) {
  * Set the speed and direction of each wheel. +ive is forward, -ve is backward
  */
 void set_wheels(int left_wheel, int right_wheel){
+
 	if (left_wheel < 0) {
 		power_left_wheel(BACKWARD, -left_wheel);
 	} else {
@@ -311,7 +314,6 @@ void parse_message(char *msg, int *nums) {
 int main(void) {
 
     
-    sendMessage("Program started!");
 	UART_setup();
 	init_wheels();
     spi_init_slave();
