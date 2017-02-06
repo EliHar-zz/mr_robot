@@ -152,7 +152,12 @@ void init_wheels() {
 	// Non Inverted PWM output mode
 	TCCR0A = (1 << WGM00) | (1 << WGM01) | (1 << COM0A1) | (1 << COM0B1);
 	TCCR0B = (1 << CS00) | (1 << CS02);
-    TIMSK0 = (1 << OCIE0A);
+
+    // TEST
+    DDRB |= (1 << PB7);
+    TCCR0A = (1 << WGM00) | (1 << WGM01) | (1 << COM0A1);
+    TCCR0B = (1 << CS00) | (1 << CS01);
+    OCR0A = 255;
 
 	TCCR2A = (1 << WGM20) | (1 << WGM21) | (1 << COM2A1) | (1 << COM2B1);
 	TCCR2B = (1 << CS20);
