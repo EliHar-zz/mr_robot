@@ -332,7 +332,6 @@ void parse_message(char *msg, int *nums) {
 
 int main(void) {
 
-    
 	start_timer();
 	UART_setup();
 	init_wheels();
