@@ -129,6 +129,26 @@ void sendInt(int num) {
 }
 
 //************************ Control car ***********************************
+
+// initialize pwm for enablers
+void initialize_pwm() {
+	// TIFR0, TIMSK0, TCCR0B
+	// TCCR0B = (1 << CS00); // no pre-scaling
+	// TCCR0B |= (1 << WGM02) | (1 << WGM01) | (1 << WGM00); // fast pwm / top
+
+	// TCCR0A |= (1 << COM0A1);
+    // set none-inverting mode
+
+	TCCR0A |= (1 << COM0A1);
+    // set none-inverting mode
+
+    TCCR0A |= (1 << WGM01) | (1 << WGM00);
+    // set fast PWM Mode
+
+    TCCR0B |= (1 << CS01);
+    // set prescaler to 8 and starts PWM
+}
+
 void init_wheels() {
 
     sendMessage("   >> Initializing wheels ...\n");
@@ -147,37 +167,7 @@ void init_wheels() {
 	// Set enabler right as output
 	DDRD |= (1 << PD6);
 
-	// Set Timer0, Timer2 in Fast PWM counting, with a prescaler 0
-	// The OC0A, OC0B, OC2A, OC2B pin is cleared on match.
-	// Non Inverted PWM output mode
-	TCCR0A = (1 << WGM00) | (1 << WGM01) | (1 << COM0A1) | (1 << COM0B1);
-	TCCR0B = (1 << CS00) | (1 << CS02);
-
-    // TEST
-    DDRB |= (1 << PB7);
-    TCCR0A = (1 << WGM00) | (1 << WGM01) | (1 << COM0A1);
-    TCCR0B = (1 << CS00) | (1 << CS01);
-    // OCR0A = 255;
-
-	// TCCR2A = (1 << WGM20) | (1 << WGM21) | (1 << COM2A1) | (1 << COM2B1);
-	// TCCR2B = (1 << CS20);
-
-	// TCCR0A |= (1 << COM0A1);
-	// TCCR0A |= (1 << WGM01) | (1 << WGM00);
-	// TCCR0B |= (1 << CS01);
-
-	// TCCR0A |= (1 << COM0A1); // Clear OC0A on Compare Match
-    // TCCR0A |= (1 << COM0B1); // Clear OC0B on Compare Match
-    // 
-    // TCCR0A |= (1 << WGM00)|(1 << WGM01); //MOO: Fast PWM, 8-bit
-    // 
-    // TCCR0B |= (1 << CS00); //clk/1 (No prescaling)
-    // 
-    // TCNT0  = 0xFF; // set value to compare OCR1x too
-    // 
-    // OCR0B = 0x00; // set OCR0B to... //in charge of PD5 (left wheel)
-    // 
-    // OCR0A = 0x00; // set OCR0A to... //in charge of PD6 (right wheel)
+	initialize_pwm();
 }
 
 void power_left_wheel(enum direction dir, uint8_t duty) {
@@ -280,8 +270,7 @@ void *get_message(char *message) {
 /*
  * Char to int
  */
-int ctoi(char d)
-{
+int ctoi(char d) {
 	char str[2];
 
 	str[0] = d;
@@ -332,7 +321,6 @@ void parse_message(char *msg, int *nums) {
 
 int main(void) {
 
-	start_timer();
 	UART_setup();
 	init_wheels();
     spi_init_slave();
