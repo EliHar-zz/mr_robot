@@ -40,6 +40,28 @@ ISR(TIMER1_OVF_vect) {
 	sei();
 }
 
+/*
+ * sends char to serial monitor
+ */
+void sendChar(char c) {
+	// Wait until buffer is empty
+	while (!(UCSR0A & (1 << UDRE0))) {}
+	// Return the data from the RX buffer
+	UDR0 = c;
+}
+
+/*
+ * Send message to serial monitor
+ */
+void sendMessage(char msg[]) {
+	for (int i = 0; msg[i]; i++) {
+		sendChar(msg[i]);
+		if (msg[i] == '#') {
+			break;
+		}
+	}
+}
+
 //***************************  UART  *****************************
 void UART_setup() {
 
@@ -76,27 +98,6 @@ void receiveMessage(char* message) {
 	message[index] = '\0';
 }
 
-/*
- * sends char to serial monitor
- */
-void sendChar(char c) {
-	// Wait until buffer is empty
-	while (!(UCSR0A & (1 << UDRE0))) {}
-	// Return the data from the RX buffer
-	UDR0 = c;
-}
-
-/*
- * Send message to serial monitor
- */
-void sendMessage(char msg[]) {
-	for (int i = 0; msg[i]; i++) {
-		sendChar(msg[i]);
-		if (msg[i] == '#') {
-			break;
-		}
-	}
-}
 
 char* itoa2(int i, char b[]){
     char const digit[] = "0123456789";
