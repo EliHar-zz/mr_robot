@@ -1,5 +1,6 @@
 Run Tensorflow on Docker
 
 ```
-docker run -it -v $PWD/tf_files:/tf_files  gcr.io/tensorflow/tensorflow:latest-devel
+cd $MR_ROBOT/tensorflow/
+docker run -it -v $PWD/shared:/tf_files  gcr.io/tensorflow/tensorflow:latest-devel
 ```
