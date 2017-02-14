@@ -4,4 +4,6 @@ project(cv)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(SOURCE_FILES main.cpp)
-add_executable(cv ${SOURCE_FILES})
+find_package( OpenCV REQUIRED )
+add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )
