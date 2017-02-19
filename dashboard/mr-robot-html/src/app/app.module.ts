@@ -9,6 +9,7 @@ import { HomeStatusComponent } from './views/home-view/home-status/home-status.c
 import { AppsListComponent } from './views/home-view/apps-list/apps-list.component';
 import { AppItemComponent } from './views/home-view/apps-list/app-item/app-item.component';
 import { ViewsComponent } from './views/views.component';
+import {MomentModule} from "angular2-moment";
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { ViewsComponent } from './views/views.component';
   imports: [
     BrowserModule,
     FormsModule,
-    HttpModule
+    HttpModule,
+    MomentModule
   ],
   providers: [],
   bootstrap: [AppComponent]

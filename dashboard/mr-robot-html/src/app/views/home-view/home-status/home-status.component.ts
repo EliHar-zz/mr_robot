@@ -7,9 +7,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeStatusComponent implements OnInit {
 
+  myDate: Date;
   constructor() { }
 
   ngOnInit() {
+    this.myDate = new Date();
   }
 
 }
