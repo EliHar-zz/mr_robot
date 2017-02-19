@@ -11,6 +11,8 @@ import { AppItemComponent } from './views/home-view/apps-list/app-item/app-item.
 import { ViewsComponent } from './views/views.component';
 import {MomentModule} from "angular2-moment";
 import {ViewDataService} from "./views/service/view-data.service";
+import { MapViewComponent } from './views/map-view/map-view.component';
+import { AgmCoreModule } from 'angular2-google-maps/core'
 
 @NgModule({
   declarations: [
@@ -19,13 +21,17 @@ import {ViewDataService} from "./views/service/view-data.service";
     HomeStatusComponent,
     AppsListComponent,
     AppItemComponent,
-    ViewsComponent
+    ViewsComponent,
+    MapViewComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
-    MomentModule
+    MomentModule,
+    AgmCoreModule.forRoot({
+      apiKey: 'AIzaSyBRGEmI4XxmYOsMpdY11ejqQf08ZCzI9cM'
+    })
   ],
   providers: [ViewDataService],
   bootstrap: [AppComponent]
