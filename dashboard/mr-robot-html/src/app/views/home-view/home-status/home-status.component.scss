@@ -22,7 +22,7 @@
 .mic-button {
   @extend .btn-circle;
   margin: 0 auto;
-  width: $large-circle-btn-radius;
-  height: $large-circle-btn-radius;
+  width: $large_circle_btn_radius;
+  height: $large_circle_btn_radius;
   background-color: $button-color-red;
 }

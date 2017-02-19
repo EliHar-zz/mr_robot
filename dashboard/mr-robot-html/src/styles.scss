@@ -17,12 +17,12 @@ $vertical_medium_spacing: $vertical_large_spacing - 20;
 $vertical_small_spacing: $vertical_medium_spacing - 20;
 
 // Buttons
-$large-circle-btn-radius: 80px;
+$large_circle_btn_radius: 80px;
 
 .btn-circle {
   text-align: center;
-  padding: $large-circle-btn-radius/15 0;
-  line-height: $large-circle-btn-radius * 0.9;
+  padding: $large_circle_btn_radius/15 0;
+  line-height: $large_circle_btn_radius * 0.9;
   border-radius: 100%;
 }
 .btn-circle.btn-lg {
