@@ -11,10 +11,6 @@ export class AppItemComponent implements OnInit {
   @Input() application : AppItemClass;
   constructor() { }
 
-  onSelect(selectedApp : AppItemClass) {
-    console.log(selectedApp);
-  }
-
   ngOnInit() {
   }
 

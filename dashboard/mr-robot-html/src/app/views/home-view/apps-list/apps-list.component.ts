@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, Input} from '@angular/core';
 import {AppItemClass} from "./app-item/app-item";
+import {ViewDataService} from "../../service/view-data.service";
 
 @Component({
   selector: 'app-apps-list',
@@ -8,15 +9,13 @@ import {AppItemClass} from "./app-item/app-item";
 })
 export class AppsListComponent implements OnInit {
   applications : AppItemClass[];
-  constructor() {}
+  constructor(private viewDataService : ViewDataService) {}
 
-  ngOnInit() {
-    this.applications = [
-      new AppItemClass("Map", "fa fa-map"),
-      new AppItemClass("Road", "fa fa-road"),
-      new AppItemClass("Phone", "fa fa-phone"),
-      new AppItemClass("Music", "fa fa-music")
-    ];
+  onSelect(selectedApp : AppItemClass) {
+    console.log("Selecting view: " + selectedApp.title);
   }
 
+  ngOnInit() {
+    this.applications = this.viewDataService.getViews();
+  }
 }

@@ -1,5 +1,7 @@
 <div class="row">
     <div class="col-xs-4" *ngFor="let app_item of applications">
-      <app-app-item [application]="app_item"></app-app-item>
+      <div (click)="onSelect(app_item)">
+        <app-app-item [application]="app_item"></app-app-item>
+      </div>
     </div>
 </div>

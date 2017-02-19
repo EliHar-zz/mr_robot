@@ -10,6 +10,7 @@ import { AppsListComponent } from './views/home-view/apps-list/apps-list.compone
 import { AppItemComponent } from './views/home-view/apps-list/app-item/app-item.component';
 import { ViewsComponent } from './views/views.component';
 import {MomentModule} from "angular2-moment";
+import {ViewDataService} from "./views/service/view-data.service";
 
 @NgModule({
   declarations: [
@@ -26,7 +27,7 @@ import {MomentModule} from "angular2-moment";
     HttpModule,
     MomentModule
   ],
-  providers: [],
+  providers: [ViewDataService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

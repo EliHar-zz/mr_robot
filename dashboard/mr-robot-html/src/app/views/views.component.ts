@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {ViewDataService} from "./service/view-data.service";
+import {AppItemClass} from "./home-view/apps-list/app-item/app-item";
 
 @Component({
   selector: 'app-views',
@@ -7,9 +9,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ViewsComponent implements OnInit {
 
-  constructor() { }
+  constructor(public viewDataService : ViewDataService) { }
 
-  ngOnInit() {
+  private _addDefaultViews() {
+    this.viewDataService.addView(new AppItemClass("Map", "fa fa-map"));
+    this.viewDataService.addView(new AppItemClass("Road", "fa fa-road"));
+    this.viewDataService.addView(new AppItemClass("Phone", "fa fa-phone"));
+    this.viewDataService.addView(new AppItemClass("Music", "fa fa-music"));
   }
 
+  ngOnInit() {
+    this._addDefaultViews();
+  }
 }
