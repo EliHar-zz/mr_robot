@@ -3,12 +3,44 @@ $dark_background: black;
 $view_background: #2C3E50;
 $nexus_width: 732px;
 $nexus_height: 412px;
+$button-color-red: #E74C3C;
 
 // Font
 $default_text_color: #ECF0F1;
 $large_text: 40px;
 $medium_text: $large_text - 10;
 $small_text: $medium_text - 10;
+
+// Vertical spacing
+$vertical_large_spacing: 80px;
+$vertical_medium_spacing: $vertical_large_spacing - 20;
+$vertical_small_spacing: $vertical_medium_spacing - 20;
+
+// Buttons
+$large-circle-btn-radius: 80px;
+
+.btn-circle {
+  text-align: center;
+  padding: $large-circle-btn-radius/15 0;
+  line-height: $large-circle-btn-radius * 0.9;
+  border-radius: 100%;
+}
+.btn-circle.btn-lg {
+  width: 50px;
+  height: 50px;
+  padding: 10px 16px;
+  font-size: 18px;
+  line-height: 1.33;
+  border-radius: 25px;
+}
+.btn-circle.btn-xl {
+  width: 70px;
+  height: 70px;
+  padding: 10px 16px;
+  font-size: 24px;
+  line-height: 1.33;
+  border-radius: 35px;
+}
 
 html, body {
   background-color: $dark_background;
