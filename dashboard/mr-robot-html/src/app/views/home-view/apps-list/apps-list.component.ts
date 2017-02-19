@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {AppItemClass} from "./app-item/app-item";
 
 @Component({
   selector: 'app-apps-list',
@@ -6,10 +7,16 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./apps-list.component.scss']
 })
 export class AppsListComponent implements OnInit {
-
-  constructor() { }
+  applications : AppItemClass[];
+  constructor() {}
 
   ngOnInit() {
+    this.applications = [
+      new AppItemClass("Map", "fa fa-map"),
+      new AppItemClass("Road", "fa fa-road"),
+      new AppItemClass("Phone", "fa fa-phone"),
+      new AppItemClass("Music", "fa fa-music")
+    ];
   }
 
 }
