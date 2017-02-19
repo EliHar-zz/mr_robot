@@ -1,0 +1,15 @@
+/* You can add global styles to this file, and also import other style files */
+$dark_background: black;
+$view_background: #2C3E50;
+$nexus_width: 732px;
+$nexus_height: 412px;
+
+// Font
+$default_text_color: #ECF0F1;
+$large_text: 40px;
+$medium_text: $large_text - 10;
+$small_text: $medium_text - 10;
+
+html, body {
+  background-color: $dark_background;
+}

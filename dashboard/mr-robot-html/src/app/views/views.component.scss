@@ -1,0 +1,10 @@
+@import "../../styles";
+
+.view {
+  background-color: $view_background;
+  color: $default_text_color;
+  height: $nexus_height;
+  width: $nexus_width;
+  overflow: hidden;
+  font-size: $small_text;
+}
