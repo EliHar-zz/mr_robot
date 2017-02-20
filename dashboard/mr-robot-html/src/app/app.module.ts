@@ -4,25 +4,28 @@ import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
-import { HomeViewComponent } from './views/home-view/home-view.component';
-import { HomeStatusComponent } from './views/home-view/home-status/home-status.component';
-import { AppsListComponent } from './views/home-view/apps-list/apps-list.component';
-import { AppItemComponent } from './views/home-view/apps-list/app-item/app-item.component';
-import { ViewsComponent } from './views/views.component';
+import { MainTemplateComponent } from './views/templates/main/main-template.component';
 import {MomentModule} from "angular2-moment";
 import {ViewDataService} from "./views/service/view-data.service";
 import { MapViewComponent } from './views/map-view/map-view.component';
 import { AgmCoreModule } from 'angular2-google-maps/core'
+import {MR_Routing} from "./app.routing";
+import { NavTemplateComponent } from './views/templates/nav/nav-template.component';
+import {MainStatusComponent} from "./views/templates/main/main-status/main-status.component";
+import {AppsViewComponent} from "./views/apps-view/apps-view.component";
+import {AppItemComponent} from "./views/apps-view/app-item/app-item.component";
+import { NavStatusComponent } from './views/templates/nav/nav-status/nav-status.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeViewComponent,
-    HomeStatusComponent,
-    AppsListComponent,
+    AppsViewComponent,
+    MainStatusComponent,
     AppItemComponent,
-    ViewsComponent,
-    MapViewComponent
+    MainTemplateComponent,
+    MapViewComponent,
+    NavTemplateComponent,
+    NavStatusComponent
   ],
   imports: [
     BrowserModule,
@@ -31,7 +34,8 @@ import { AgmCoreModule } from 'angular2-google-maps/core'
     MomentModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyBRGEmI4XxmYOsMpdY11ejqQf08ZCzI9cM'
-    })
+    }),
+    MR_Routing
   ],
   providers: [ViewDataService],
   bootstrap: [AppComponent]

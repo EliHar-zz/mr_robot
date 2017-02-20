@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {AppItemClass} from "../home-view/apps-list/app-item/app-item";
+import {AppItemClass} from "../apps-view/app-item/app-item";
 
 @Injectable()
 export class ViewDataService {

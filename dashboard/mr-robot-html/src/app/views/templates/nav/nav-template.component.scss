@@ -1,0 +1,18 @@
+@import "../../../../styles";
+@import "../main/main-template.component";
+
+$status_height : 50px;
+
+.open-view {
+  @extend .view
+}
+
+.app-view {
+  height: $nexus_height - $status_height;
+  width: $nexus_width;
+}
+
+.status-view {
+  height: $status_height;
+  width: $nexus_width;
+}
