@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {Observable} from "rxjs/Rx";
+import {DateService} from "../../../service/date.service";
 
 @Component({
   selector: 'mr-main-status',
@@ -7,11 +9,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MainStatusComponent implements OnInit {
 
-  myDate: Date;
-  constructor() { }
+  constructor(public dateService : DateService) { }
 
   ngOnInit() {
-    this.myDate = new Date();
   }
-
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common'
+import {DateService} from "../../../service/date.service";
 
 @Component({
   selector: 'mr-nav-status',
@@ -8,7 +9,7 @@ import { Location } from '@angular/common'
 })
 export class NavStatusComponent implements OnInit {
 
-  constructor(private _location: Location) { }
+  constructor(private _location: Location, public dateService : DateService) { }
 
   ngOnInit() {
   }

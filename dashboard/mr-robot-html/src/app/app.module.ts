@@ -15,6 +15,7 @@ import {MainStatusComponent} from "./views/templates/main/main-status/main-statu
 import {AppsViewComponent} from "./views/apps-view/apps-view.component";
 import {AppItemComponent} from "./views/apps-view/app-item/app-item.component";
 import { NavStatusComponent } from './views/templates/nav/nav-status/nav-status.component';
+import {DateService} from "./views/service/date.service";
 
 @NgModule({
   declarations: [
@@ -37,7 +38,7 @@ import { NavStatusComponent } from './views/templates/nav/nav-status/nav-status.
     }),
     MR_Routing
   ],
-  providers: [ViewDataService],
+  providers: [ViewDataService, DateService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

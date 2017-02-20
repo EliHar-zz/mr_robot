@@ -1,7 +1,7 @@
 <div class="row text-center">
   <div class="clock">
-    <span class="time"><b>{{myDate | amDateFormat:'hh'}}</b>{{myDate | amDateFormat:':mm'}}</span>
-    <span class="ampm">{{myDate | amDateFormat:'A'}}</span>
+    <span class="time"><b>{{dateService.getDate | amDateFormat:'hh'}}</b>{{dateService.getDate | amDateFormat:':mm'}}</span>
+    <span class="ampm">{{dateService.getDate | amDateFormat:'A'}}</span>
   </div>
   <div class="battery">
     <i class="fa fa-battery-quarter" aria-hidden="true"></i>

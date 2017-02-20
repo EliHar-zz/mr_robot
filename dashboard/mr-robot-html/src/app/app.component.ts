@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ViewDataService} from "./views/service/view-data.service";
-import {AppItemClass} from "./views/home-view/apps-list/app-item/app-item";
+import {AppItemClass} from "./views/apps-view/app-item/app-item";
 
 @Component({
   selector: 'mr-root',
