@@ -1,21 +1,36 @@
 <div class="row text-center">
   <div class="col-md-12">
-    <table class="control-table">
-      <tr>
-        <td></td>
-        <td><span class="fa fa-arrow-up"></span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><span class="fa fa-arrow-left"></span></td>
-        <td><span class="fa fa-stop-circle-o"></span></td>
-        <td><span class="fa fa-arrow-right"></span></td>
-      </tr>
-      <tr>
-        <td></td>
-        <td><span class="fa fa-arrow-down"></span></td>
-        <td></td>
-      </tr>
-    </table>
+
+    <div *ngIf="!connected">
+      <div class="disconnected">
+        <div class="col-xs-12 error-icon">
+        <span class="fa fa-frown-o"></span>
+        </div>
+        <div class="col-xs-12">
+          <span class="message">Cannot connect at this moment ...</span>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="connected">
+      <table class="control-table">
+        <tr>
+          <td></td>
+          <td><span class="fa fa-arrow-up"></span></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td><span class="fa fa-arrow-left"></span></td>
+          <td><span class="fa fa-stop-circle-o"></span></td>
+          <td><span class="fa fa-arrow-right"></span></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><span class="fa fa-arrow-down"></span></td>
+          <td></td>
+        </tr>
+      </table>
+
+    </div>
   </div>
 </div>

@@ -18,6 +18,7 @@ import { NavStatusComponent } from './views/templates/nav/nav-status/nav-status.
 import {DateService} from "./views/service/date.service";
 import { ClockViewComponent } from './views/clock-view/clock-view.component';
 import { ControlViewComponent } from './views/control-view/control-view.component';
+import {ControlSocketService} from "./views/service/control-socket.service";
 
 @NgModule({
   declarations: [
@@ -42,7 +43,7 @@ import { ControlViewComponent } from './views/control-view/control-view.componen
     }),
     MR_Routing
   ],
-  providers: [ViewDataService, DateService],
+  providers: [ViewDataService, DateService, ControlSocketService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
