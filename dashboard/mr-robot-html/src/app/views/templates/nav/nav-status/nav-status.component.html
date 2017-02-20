@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="col-xs-3">
-      <div class="clock">
+      <div class="clock" [routerLink]="['/open','clock']">
         <span class="time"><b>{{dateService.getDate | amDateFormat:'hh'}}</b>{{dateService.getDate | amDateFormat:':mm'}}</span>
         <span class="ampm">{{dateService.getDate | amDateFormat:'A'}}</span>
       </div>

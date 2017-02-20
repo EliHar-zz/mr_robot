@@ -3,6 +3,7 @@ import {MapViewComponent} from "./views/map-view/map-view.component";
 import {MainTemplateComponent} from "./views/templates/main/main-template.component";
 import {NavTemplateComponent} from "./views/templates/nav/nav-template.component";
 import {AppsViewComponent} from "./views/apps-view/apps-view.component";
+import {ClockViewComponent} from "./views/clock-view/clock-view.component";
 
 const APP_ROUTES : Routes = [
   { path: '', redirectTo: 'view/home', pathMatch: 'full'},
@@ -10,7 +11,8 @@ const APP_ROUTES : Routes = [
     { path: 'home', component: AppsViewComponent}
   ]},
   { path: 'open', component: NavTemplateComponent, children: [
-    { path: 'map', component: MapViewComponent}
+    { path: 'map', component: MapViewComponent},
+    { path: 'clock', component: ClockViewComponent}
   ]}
 ];
 

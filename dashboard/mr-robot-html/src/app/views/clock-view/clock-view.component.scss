@@ -1,0 +1,15 @@
+@import "../../../styles";
+
+$clock_font : $large_text * 2;
+
+.clock {
+  line-height: $clock_font*4;
+}
+
+.time {
+  font-size: $clock_font;
+}
+
+.ampm {
+  font-size: $large_text;
+}
