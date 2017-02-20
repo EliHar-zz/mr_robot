@@ -4,15 +4,15 @@
 $status_height : 50px;
 
 .open-view {
-  @extend .view
+  @extend .view;
 }
 
 .app-view {
-  height: $nexus_height - $status_height;
-  width: $nexus_width;
+  height: $window_height - $status_height;
+  width: 100%;
 }
 
 .status-view {
   height: $status_height;
-  width: $nexus_width;
+  width: 100%;
 }

@@ -5,6 +5,10 @@ $nexus_width: 732px;
 $nexus_height: 412px;
 $button-color-red: #E74C3C;
 
+// Window
+$window_height : $nexus_height;
+$window_width : $nexus_width;
+
 // Font
 $default_text_color: #ECF0F1;
 $large_text: 40px;
@@ -28,14 +32,14 @@ $large_circle_btn_radius: 80px;
 
 html, body {
   background-color: $dark_background;
+  width: $window_width;
+  height: $window_height;
 }
 
 .app-loading {
   font-size: $large_text;
-  width: $nexus_width;
-  height: $nexus_height;
   text-align: center;
-  line-height: $nexus_height;
+  line-height: $window_height;
   color: $default_text_color;
   background-color: $view_background;
 }

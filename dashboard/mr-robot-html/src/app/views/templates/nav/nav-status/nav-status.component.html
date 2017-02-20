@@ -1,3 +1,24 @@
-<p>
-  nav-status works!
-</p>
+<div class="nav-status">
+  <div class="row text-center">
+    <div class="col-xs-3">
+      <div class="mic">
+        <span class="fa fa-microphone"></span>
+      </div>
+    </div>
+    <div class="col-xs-3">
+      <div [routerLink]="['/']" class="home">
+        <span class="fa fa-home"></span>
+      </div>
+    </div>
+    <div (click)="onBackClicked()" class="col-xs-3">
+      <div class="back">
+        <span class="fa fa-chevron-left"></span>
+      </div>
+    </div>
+    <div class="col-xs-3">
+      <div class="clock">
+        12:00PM
+      </div>
+    </div>
+  </div>
+</div>
