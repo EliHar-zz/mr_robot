@@ -55,4 +55,8 @@ io.on( "connection", function( socket ) {
     console.log( "Control connected ..." );
 });
 
+io.on("control-car", function(socket) {
+    console.log(socket);
+});
+
 module.exports = app;
