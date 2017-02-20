@@ -52,8 +52,7 @@ app.use(function(err, req, res, next) {
 
 // socket.io events
 io.on( "connection", function( socket ) {
-    console.log( "A user connected" );
-    nohup("nohup echo 'test' > /tmp/testing", {silent: true});
+    console.log( "Control connected ..." );
 });
 
 module.exports = app;
