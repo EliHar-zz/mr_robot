@@ -1,0 +1,7 @@
+@import "../../../styles";
+
+.control-table {
+  width: 100%;
+  height: $window_height - $status_height;
+  font-size: $large_text*1.2;
+}

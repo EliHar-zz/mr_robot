@@ -4,6 +4,7 @@ import {MainTemplateComponent} from "./views/templates/main/main-template.compon
 import {NavTemplateComponent} from "./views/templates/nav/nav-template.component";
 import {AppsViewComponent} from "./views/apps-view/apps-view.component";
 import {ClockViewComponent} from "./views/clock-view/clock-view.component";
+import {ControlViewComponent} from "./views/control-view/control-view.component";
 
 const APP_ROUTES : Routes = [
   { path: '', redirectTo: 'view/home', pathMatch: 'full'},
@@ -12,7 +13,8 @@ const APP_ROUTES : Routes = [
   ]},
   { path: 'open', component: NavTemplateComponent, children: [
     { path: 'map', component: MapViewComponent},
-    { path: 'clock', component: ClockViewComponent}
+    { path: 'clock', component: ClockViewComponent},
+    { path: 'control', component: ControlViewComponent}
   ]}
 ];
 

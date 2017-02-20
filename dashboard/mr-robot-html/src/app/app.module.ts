@@ -17,6 +17,7 @@ import {AppItemComponent} from "./views/apps-view/app-item/app-item.component";
 import { NavStatusComponent } from './views/templates/nav/nav-status/nav-status.component';
 import {DateService} from "./views/service/date.service";
 import { ClockViewComponent } from './views/clock-view/clock-view.component';
+import { ControlViewComponent } from './views/control-view/control-view.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { ClockViewComponent } from './views/clock-view/clock-view.component';
     MapViewComponent,
     NavTemplateComponent,
     NavStatusComponent,
-    ClockViewComponent
+    ClockViewComponent,
+    ControlViewComponent
   ],
   imports: [
     BrowserModule,
