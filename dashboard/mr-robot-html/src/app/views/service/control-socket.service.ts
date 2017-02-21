@@ -29,6 +29,8 @@ export class ControlSocketService {
   }
 
   public getControlConnection() {
+
+    // Create a new instance each time the component is loaded
     let observable = new Observable((observer) => {
       this.socket = io(this.url +":"+ this.port);
 
@@ -40,6 +42,10 @@ export class ControlSocketService {
         observer.next(this._formatMessage(ControlSocketService.CONNECT_ERROR, error));
       });
 
+      this.socket.on('connect',() => {
+        observer.next(this._formatMessage(ControlSocketService.CONNECT_SUCCESS, null));
+      });
+
       return () => {
         this.socket.disconnect();
       }
@@ -47,7 +53,7 @@ export class ControlSocketService {
     return observable;
   }
 
-  sendControl(value : string) {
-    this.socket.emit('control-car', value)
+  public emitNavigation(direction : string, speed : number) {
+    this.socket.emit('car-navigation', {"direction": direction, "speed": speed});
   }
 }

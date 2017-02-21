@@ -27,4 +27,29 @@ export class ControlViewComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.socketConnection.unsubscribe();
   }
+
+  onUpPress() {
+    console.log("Up pressed!");
+    this.controlSocketService.emitNavigation("up", 255);
+  }
+
+  onDownPress() {
+    console.log("Down pressed!");
+    this.controlSocketService.emitNavigation("down", 255);
+  }
+
+  onLeftPress() {
+    console.log("Left pressed!");
+    this.controlSocketService.emitNavigation("left", 255);
+  }
+
+  onRightPress() {
+    console.log("Right pressed!");
+    this.controlSocketService.emitNavigation("right", 255);
+  }
+
+  onStopPress() {
+    console.log("Stop pressed!");
+    this.controlSocketService.emitNavigation("stop", 0);
+  }
 }
