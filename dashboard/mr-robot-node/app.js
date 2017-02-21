@@ -52,11 +52,15 @@ app.use(function(err, req, res, next) {
 
 // socket.io events
 io.on( "connection", function( socket ) {
-    console.log( "Control connected ..." );
-});
+    console.log( "Control connected" );
 
-io.on("control-car", function(socket) {
-    console.log(socket);
+    socket.on("car-navigation", function(value) {
+        console.log(value);
+    });
+
+    socket.on("disconnect", function(){
+        console.log("Control disconnected");
+    });
 });
 
 module.exports = app;
