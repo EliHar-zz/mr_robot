@@ -8,24 +8,36 @@ import {ControlSocketService} from "../service/control-socket.service";
 })
 export class ControlViewComponent implements OnInit, OnDestroy {
 
+  private onReadyConnection;
   private socketConnection;
   private connected : boolean = false;
 
   constructor(private controlSocketService : ControlSocketService) { }
 
   ngOnInit() {
-    // Establish socket connection
-    this.socketConnection = this.controlSocketService.getControlConnection().subscribe((data : any) =>{
+
+    // Wait till all server info are fetched from configuration files
+    this.onReadyConnection = this.controlSocketService.onReadySubscribe(() =>{
+
+      // Establish socket connection
+      this.socketConnection = this.controlSocketService.socketSubscribe((data : any) =>{
         if(data.code === ControlSocketService.CONNECT_ERROR) {
           this.connected = false;
         } else if(data.code === ControlSocketService.CONNECT_SUCCESS) {
           this.connected = true;
         }
       });
+    });
   }
 
   ngOnDestroy() {
-    this.socketConnection.unsubscribe();
+    if(this.socketConnection != null) {
+      this.socketConnection.unsubscribe();
+    }
+
+    if(this.onReadyConnection != null) {
+      this.onReadyConnection.unsubscribe();
+    }
   }
 
   onUpPress() {
