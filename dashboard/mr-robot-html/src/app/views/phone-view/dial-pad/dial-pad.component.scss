@@ -1,0 +1,13 @@
+@import "../../../../styles";
+
+.number {
+  padding: $small_text/2;
+  font-weight: bold;
+  font-size: $medium_text;
+  text-align: center;
+}
+
+.dial-screen {
+  padding: $small_text/2;
+  font-size: $large_text;
+}
