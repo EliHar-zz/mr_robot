@@ -1,0 +1,12 @@
+@import "../../../../styles";
+
+.contacts-list {
+  height: $window_height - $status_height;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  position: absolute;
+}
+
+.contact {
+  margin: $small_text/2;
+}

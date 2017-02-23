@@ -19,6 +19,11 @@ import {DateService} from "./views/service/date.service";
 import { ClockViewComponent } from './views/clock-view/clock-view.component';
 import { ControlViewComponent } from './views/control-view/control-view.component';
 import {ControlSocketService} from "./views/service/control-socket.service";
+import { PhoneViewComponent } from './views/phone-view/phone-view.component';
+import { ContactsListComponent } from './views/phone-view/contacts-list/contacts-list.component';
+import { DialPadComponent } from './views/phone-view/dial-pad/dial-pad.component';
+import {ContactsService} from "./views/service/contacts.service";
+import { ContactItemComponent } from './views/phone-view/contacts-list/contact-item/contact-item.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +36,11 @@ import {ControlSocketService} from "./views/service/control-socket.service";
     NavTemplateComponent,
     NavStatusComponent,
     ClockViewComponent,
-    ControlViewComponent
+    ControlViewComponent,
+    PhoneViewComponent,
+    ContactsListComponent,
+    DialPadComponent,
+    ContactItemComponent
   ],
   imports: [
     BrowserModule,
@@ -43,7 +52,7 @@ import {ControlSocketService} from "./views/service/control-socket.service";
     }),
     MR_Routing
   ],
-  providers: [ViewDataService, DateService, ControlSocketService],
+  providers: [ViewDataService, DateService, ControlSocketService, ContactsService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
