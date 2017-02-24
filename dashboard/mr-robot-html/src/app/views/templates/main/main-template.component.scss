@@ -1,0 +1,10 @@
+@import "../../../../styles";
+
+.view {
+  background-color: $view_background;
+  color: $default_text_color;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  font-size: $small_text;
+}

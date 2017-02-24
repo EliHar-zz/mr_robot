@@ -1,0 +1,28 @@
+@import "../../../../../styles";
+
+.clock {
+  padding-top: $vertical_small_spacing;
+  margin-bottom: $vertical_medium_spacing;
+}
+
+.time{
+  font-size: $large_text;
+}
+
+.battery {
+  margin-bottom: $vertical_medium_spacing;
+  font-size: $medium_text;
+}
+
+.mic {
+  font-size: $large_text;
+  text-align: center;
+}
+
+.mic-button {
+  @extend .btn-circle;
+  margin: 0 auto;
+  width: $large_circle_btn_radius;
+  height: $large_circle_btn_radius;
+  background-color: $button-color-red;
+}

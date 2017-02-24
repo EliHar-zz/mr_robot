@@ -1,0 +1,46 @@
+/* You can add global styles to this file, and also import other style files */
+$dark_background: black;
+$view_background: #2C3E50;
+$nexus_width: 732px;
+$nexus_height: 412px;
+$button-color-red: #E74C3C;
+
+// Window
+$window_height : $nexus_height;
+$window_width : $nexus_width;
+$status_height : 50px;
+
+// Font
+$default_text_color: #ECF0F1;
+$large_text: 40px;
+$medium_text: $large_text - 10;
+$small_text: $medium_text - 10;
+
+// Vertical spacing
+$vertical_large_spacing: 80px;
+$vertical_medium_spacing: $vertical_large_spacing - 20;
+$vertical_small_spacing: $vertical_medium_spacing - 20;
+
+// Buttons
+$large_circle_btn_radius: 80px;
+
+.btn-circle {
+  text-align: center;
+  padding: $large_circle_btn_radius/15 0;
+  line-height: $large_circle_btn_radius * 0.9;
+  border-radius: 100%;
+}
+
+html, body {
+  background-color: $dark_background;
+  width: $window_width;
+  height: $window_height;
+}
+
+.app-loading {
+  font-size: $large_text;
+  text-align: center;
+  line-height: $window_height;
+  color: $default_text_color;
+  background-color: $view_background;
+}

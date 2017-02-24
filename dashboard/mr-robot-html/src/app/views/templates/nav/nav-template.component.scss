@@ -1,0 +1,18 @@
+@import "../../../../styles";
+@import "../main/main-template.component";
+
+.open-view {
+  @extend .view;
+}
+
+.app-view {
+  height: $window_height - $status_height;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.status-view {
+  height: $status_height;
+  width: 100%;
+}

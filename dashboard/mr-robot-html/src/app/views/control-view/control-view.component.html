@@ -1,0 +1,36 @@
+<div class="row text-center">
+  <div class="col-md-12">
+
+    <div *ngIf="!connected">
+      <div class="disconnected">
+        <div class="col-xs-12 error-icon">
+        <span class="fa fa-cloud"></span>
+        </div>
+        <div class="col-xs-12">
+          <span class="message">Connecting ...</span>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="connected">
+      <table class="control-table">
+        <tr>
+          <td></td>
+          <td><span (click)="onUpPress()" class="fa fa-arrow-up"></span></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td><span (click)="onLeftPress()" class="fa fa-arrow-left"></span></td>
+          <td><span (click)="onStopPress()" class="fa fa-stop-circle-o"></span></td>
+          <td><span (click)="onRightPress()" class="fa fa-arrow-right"></span></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><span (click)="onDownPress()" class="fa fa-arrow-down"></span></td>
+          <td></td>
+        </tr>
+      </table>
+
+    </div>
+  </div>
+</div>

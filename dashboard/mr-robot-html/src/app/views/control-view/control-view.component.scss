@@ -1,0 +1,17 @@
+@import "../../../styles";
+
+.control-table {
+  width: 100%;
+  height: $window_height - $status_height;
+  font-size: $large_text*1.2;
+}
+
+.disconnected {
+  margin-top: ($window_height - $status_height) / 4;
+}
+.error-icon {
+  font-size: $large_text * 2;
+}
+.message {
+  font-size: $medium_text;
+}

@@ -1,0 +1,25 @@
+<div class="nav-status">
+  <div class="row text-center">
+    <div class="col-xs-3">
+      <div class="mic">
+        <span class="fa fa-microphone"></span>
+      </div>
+    </div>
+    <div class="col-xs-3">
+      <div [routerLink]="['/']" class="home">
+        <span class="fa fa-home"></span>
+      </div>
+    </div>
+    <div (click)="onBackClicked()" class="col-xs-3">
+      <div class="back">
+        <span class="fa fa-chevron-left"></span>
+      </div>
+    </div>
+    <div class="col-xs-3">
+      <div class="clock" [routerLink]="['/open','clock']">
+        <span class="time"><b>{{dateService.getDate | amDateFormat:'hh'}}</b>{{dateService.getDate | amDateFormat:':mm'}}</span>
+        <span class="ampm">{{dateService.getDate | amDateFormat:'A'}}</span>
+      </div>
+    </div>
+  </div>
+</div>

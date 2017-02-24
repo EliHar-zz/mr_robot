@@ -1,0 +1,15 @@
+<div class="row text-center">
+  <div class="clock" [routerLink]="['/open','clock']">
+    <span class="time"><b>{{dateService.getDate | amDateFormat:'hh'}}</b>{{dateService.getDate | amDateFormat:':mm'}}</span>
+    <span class="ampm">{{dateService.getDate | amDateFormat:'A'}}</span>
+  </div>
+  <div class="battery">
+    <i class="fa fa-battery-quarter" aria-hidden="true"></i>
+    <span class="battery-value">40%</span>
+  </div>
+  <div class="mic">
+    <div class="mic-button">
+      <span class="fa fa-microphone"></span>
+    </div>
+  </div>
+</div>

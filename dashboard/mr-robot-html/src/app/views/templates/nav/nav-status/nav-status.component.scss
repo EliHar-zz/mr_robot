@@ -1,0 +1,15 @@
+@import "../../../../../styles";
+
+.mic {
+  background-color: $button-color-red;
+  height: $status_height;
+}
+
+.nav-status {
+  font-size: $medium_text;
+  line-height: $medium_text*1.8;
+}
+
+.ampm {
+  font-size: $small_text;
+}
