@@ -1,0 +1,25 @@
+@import "../../../../styles";
+
+.title {
+  font-size: $medium_text;
+  padding-top: $medium_text/2;
+}
+
+.contact-name {
+  font-size: $medium_text;
+  padding-top: $medium_text/2;
+  padding-bottom: $medium_text/2;
+}
+
+.contact-numbers {
+  overflow-x: hidden;
+  overflow-y: scroll;
+  height: ($window_height - $status_height) / 1.6;
+}
+
+.contact-number {
+  font-size: $medium_text;
+  padding-top: $medium_text/2;
+  padding-bottom:$medium_text/2;
+  border-bottom: 1px solid white;
+}

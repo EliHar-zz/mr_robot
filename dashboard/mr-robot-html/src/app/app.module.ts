@@ -25,6 +25,7 @@ import { DialPadComponent } from './views/phone-view/dial-pad/dial-pad.component
 import {ContactsService} from "./views/service/contacts.service";
 import { ContactItemComponent } from './views/phone-view/contacts-list/contact-item/contact-item.component';
 import {DialService} from "./views/service/dial.service";
+import { NumberSelectComponent } from './views/phone-view/number-select/number-select.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import {DialService} from "./views/service/dial.service";
     PhoneViewComponent,
     ContactsListComponent,
     DialPadComponent,
-    ContactItemComponent
+    ContactItemComponent,
+    NumberSelectComponent
   ],
   imports: [
     BrowserModule,

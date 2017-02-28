@@ -25,4 +25,8 @@ export class DialPadComponent implements OnInit {
   public appendValue(val : string) {
     this.dialService.setDialNumber(this.dialService.getDialNumber+val);
   }
+
+  public dial() {
+    this.dialService.startCall();
+  }
 }

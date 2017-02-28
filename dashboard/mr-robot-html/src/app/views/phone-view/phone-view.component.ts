@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {DialService} from "../service/dial.service";
 
 @Component({
   selector: 'mr-phone-view',
@@ -7,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PhoneViewComponent implements OnInit {
 
-  constructor() { }
+  constructor(public dialService : DialService) { }
 
   ngOnInit() {
   }

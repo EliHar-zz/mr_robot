@@ -3,6 +3,7 @@
     <mr-contacts-list></mr-contacts-list>
   </div>
   <div class="col-xs-8">
-    <mr-dial-pad></mr-dial-pad>
+    <div *ngIf="dialService.shouldSelect == false"><mr-dial-pad></mr-dial-pad></div>
+    <div *ngIf="dialService.shouldSelect == true"><mr-number-select></mr-number-select></div>
   </div>
 </div>
