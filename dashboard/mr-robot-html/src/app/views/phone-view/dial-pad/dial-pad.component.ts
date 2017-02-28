@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, Input} from '@angular/core';
+import {DialService} from "../../service/dial.service";
 
 @Component({
   selector: 'mr-dial-pad',
@@ -7,20 +8,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DialPadComponent implements OnInit {
 
-  public screenValue : string;
-  constructor() { }
+  constructor(public dialService : DialService) { }
 
   ngOnInit() {
-    this.screenValue = "";
+
   }
 
   public removeLastChar() {
-    if(this.screenValue.length > 0) {
-      this.screenValue = this.screenValue.substring(0,this.screenValue.length-1);
+    if(this.dialService.getDialNumber.length > 0) {
+      this.dialService.setDialNumber(
+        this.dialService.getDialNumber.substring(0,
+          this.dialService.getDialNumber.length-1));
     }
   }
 
   public appendValue(val : string) {
-    this.screenValue += val;
+    this.dialService.setDialNumber(this.dialService.getDialNumber+val);
   }
 }

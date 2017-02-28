@@ -1,7 +1,7 @@
 <div class="dial">
   <div class="row dial-screen">
     <div class="col-xs-12">
-      <div class="col-xs-10 number-screen">{{screenValue}}</div>
+      <div class="col-xs-10 number-screen">{{dialService.getDialNumber}}</div>
       <div class="col-xs-2"><span (click)="removeLastChar()" class="fa fa-caret-square-o-left"></span></div>
     </div>
   </div>

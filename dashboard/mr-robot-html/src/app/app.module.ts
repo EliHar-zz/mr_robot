@@ -24,6 +24,7 @@ import { ContactsListComponent } from './views/phone-view/contacts-list/contacts
 import { DialPadComponent } from './views/phone-view/dial-pad/dial-pad.component';
 import {ContactsService} from "./views/service/contacts.service";
 import { ContactItemComponent } from './views/phone-view/contacts-list/contact-item/contact-item.component';
+import {DialService} from "./views/service/dial.service";
 
 @NgModule({
   declarations: [
@@ -52,7 +53,7 @@ import { ContactItemComponent } from './views/phone-view/contacts-list/contact-i
     }),
     MR_Routing
   ],
-  providers: [ViewDataService, DateService, ControlSocketService, ContactsService],
+  providers: [ViewDataService, DateService, ControlSocketService, ContactsService, DialService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
