@@ -1,29 +1,13 @@
 <div class="dial">
   <div class="row dial-screen">
     <div class="col-xs-12">
-      123456
+      <div class="col-xs-10 number-screen">{{screenValue}}</div>
+      <div class="col-xs-2"><span (click)="removeLastChar()" class="fa fa-caret-square-o-left"></span></div>
     </div>
   </div>
   <div class="row dial-pad">
-    <div class="number-row row">
-      <div class="col-xs-4 number"><span class="">1</span></div>
-      <div class="col-xs-4 number"><span class="">2</span></div>
-      <div class="col-xs-4 number"><span class="">3</span></div>
-    </div>
-    <div class="number-row row">
-      <div class="col-xs-4 number"><span class="">4</span></div>
-      <div class="col-xs-4 number"><span class="">5</span></div>
-      <div class="col-xs-4 number"><span class="">6</span></div>
-    </div>
-    <div class="number-row row">
-      <div class="col-xs-4 number"><span class="">7</span></div>
-      <div class="col-xs-4 number"><span class="">8</span></div>
-      <div class="col-xs-4 number"><span class="">9</span></div>
-    </div>
-    <div class="number-row row">
-      <div class="col-xs-4 number"><span class="">*</span></div>
-      <div class="col-xs-4 number"><span class="">0</span></div>
-      <div class="col-xs-4 number"><span class="">#</span></div>
+    <div *ngFor="let rowList of [['1','2','3'],['4','5','6'],['7','8','9'],['*','0','#']]" class="number-row row">
+      <div *ngFor="let col of rowList" class="col-xs-4 number" (click)="appendValue(col)"><span>{{col}}</span></div>
     </div>
   </div>
 </div>

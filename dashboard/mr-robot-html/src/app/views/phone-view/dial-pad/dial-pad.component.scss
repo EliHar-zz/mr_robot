@@ -10,4 +10,9 @@
 .dial-screen {
   padding: $small_text/2;
   font-size: $large_text;
+  height: ($window_height - $status_height)/4;
+}
+
+.number-screen {
+  overflow-x: scroll;
 }
