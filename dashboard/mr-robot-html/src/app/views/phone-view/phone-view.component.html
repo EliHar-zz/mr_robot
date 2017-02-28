@@ -1,4 +1,8 @@
-<div class="row">
+<div *ngIf="dialService.getOngoingCall == true" class="row">
+  <div class="col-xs-12"><mr-on-call></mr-on-call></div>
+</div>
+
+<div *ngIf="dialService.getOngoingCall == false" class="row">
   <div class="col-xs-4">
     <mr-contacts-list></mr-contacts-list>
   </div>

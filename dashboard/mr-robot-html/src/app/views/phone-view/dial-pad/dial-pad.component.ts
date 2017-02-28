@@ -27,6 +27,8 @@ export class DialPadComponent implements OnInit {
   }
 
   public dial() {
-    this.dialService.startCall();
+    if(this.dialService.getDialNumber.trim().length > 0) {
+      this.dialService.startCall();
+    }
   }
 }
