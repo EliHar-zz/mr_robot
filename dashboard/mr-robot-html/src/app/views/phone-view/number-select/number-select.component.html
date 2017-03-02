@@ -1,0 +1,15 @@
+<div class="row">
+  <div class="col-xs-12">
+    <div class="title">Select which number to call</div>
+  </div>
+  <div class="col-xs-12">
+    <div class="contact-name">
+      <span class="fa fa-user"></span> {{dialService.getContactOnSelectNumber.getName}}
+    </div>
+    <div class="contact-numbers">
+      <div *ngFor="let number of dialService.getContactOnSelectNumber.getNumbers" (click)="onNumberSelected(number)" class="contact-number">
+        <span class="fa fa-phone"></span> {{number}}
+      </div>
+    </div>
+  </div>
+</div>

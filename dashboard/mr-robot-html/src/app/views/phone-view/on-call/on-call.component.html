@@ -1,0 +1,17 @@
+<div class="text-center">
+  <div class="row icon">
+    <div class="col-xs-12"><span class="fa fa-user"></span></div>
+  </div>
+
+  <div class="row number">
+    <div class="col-xs-12">{{dialService.getDialNumber}}</div>
+  </div>
+
+  <div class="row timer">
+    {{dialService.getCallTime}}
+  </div>
+
+  <div class="row phone">
+    <span (click)="onStopCall()" class="fa fa-phone-square"></span>
+  </div>
+</div>

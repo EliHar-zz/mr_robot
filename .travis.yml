@@ -9,3 +9,4 @@ branches:
 
 script:
   - ./gradlew clean build test
+  - cd /dashboard/mr-robot-html/; npm install

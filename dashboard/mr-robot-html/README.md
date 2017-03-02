@@ -1,5 +1,11 @@
 # MrRobotHtml
 
+## Run on Docker
+```
+sudo docker build -t mr_robot_dashboard:latest .
+sudo docker run --name mr_robot -p 4200:4200 -it mr_robot_dashboard:latest
+```
+
 This project was generated with [angular-cli](https://github.com/angular/angular-cli) version 1.0.0-beta.28.3.
 
 ## Development server

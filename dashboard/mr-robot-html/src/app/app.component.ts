@@ -22,19 +22,20 @@ export class AppComponent implements OnInit {
   }
 
   private _addDefaultContacts() {
-    this.contactsService.addContact(new ContactItem("Inez Simmons", [123456789,987654321]));
-    this.contactsService.addContact(new ContactItem("Vera Hill", [123456789,987654321]));
-    this.contactsService.addContact(new ContactItem("Mae Garcia", [123456789,987654321]));
-    this.contactsService.addContact(new ContactItem("Olivia Lindsey", [123456789,987654321]));
-    this.contactsService.addContact(new ContactItem("Richard Bailey", [123456789,987654321]));
-    this.contactsService.addContact(new ContactItem("Joe Mitchell", [123456789,987654321]));
-    this.contactsService.addContact(new ContactItem("Owen Jefferson", [123456789,987654321]));
-    this.contactsService.addContact(new ContactItem("Sheila Pierce", [123456789,987654321]));
-    this.contactsService.addContact(new ContactItem("Susan Hill", [123456789,987654321]));
-    this.contactsService.addContact(new ContactItem("Kara Richards", [123456789,987654321]));
-    this.contactsService.addContact(new ContactItem("Milton Gibson", [123456789,987654321]));
-    this.contactsService.addContact(new ContactItem("Neil Reyes", [123456789,987654321]));
-    this.contactsService.addContact(new ContactItem("Jean Garza", [123456789,987654321]));
+    this.contactsService.addContact(new ContactItem("Inez Simmons",
+      ["123456789","987654321","987654321","987654321","987654321","987654321","987654321"]));
+    this.contactsService.addContact(new ContactItem("Vera Hill", ["123456789"]));
+    this.contactsService.addContact(new ContactItem("Mae Garcia", ["123456789","987654321"]));
+    this.contactsService.addContact(new ContactItem("Olivia Lindsey", ["123456789","987654321"]));
+    this.contactsService.addContact(new ContactItem("Richard Bailey", ["123456789","987654321"]));
+    this.contactsService.addContact(new ContactItem("Joe Mitchell", ["123456789","987654321"]));
+    this.contactsService.addContact(new ContactItem("Owen Jefferson", ["123456789","987654321"]));
+    this.contactsService.addContact(new ContactItem("Sheila Pierce", ["123456789","987654321"]));
+    this.contactsService.addContact(new ContactItem("Susan Hill", ["123456789","987654321"]));
+    this.contactsService.addContact(new ContactItem("Kara Richards", ["123456789","987654321"]));
+    this.contactsService.addContact(new ContactItem("Milton Gibson", ["123456789","987654321"]));
+    this.contactsService.addContact(new ContactItem("Neil Reyes", ["123456789","987654321"]));
+    this.contactsService.addContact(new ContactItem("Jean Garza", ["123456789","987654321"]));
 
   }
 

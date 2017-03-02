@@ -1,5 +1,5 @@
 <div class="contacts-list">
-  <div *ngFor="let contact of contactsList" class="col-xs-12 contact">
+  <div *ngFor="let contact of contactsList" (click)="onContactSelect(contact)" class="col-xs-12 contact">
     <mr-contact-item [contact]="contact"></mr-contact-item>
   </div>
 </div>

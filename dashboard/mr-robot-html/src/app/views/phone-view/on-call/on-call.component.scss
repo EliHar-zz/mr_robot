@@ -1,0 +1,20 @@
+@import "../../../../styles";
+
+.icon {
+  font-size: $large_text*2;
+  padding-top: $medium_text;
+}
+
+.number {
+  font-size: $medium_text * 1.5;
+}
+
+.timer {
+  font-size: $medium_text;
+}
+
+.phone {
+  padding-top: $small_text;
+  color: $button-color-red;
+  font-size: $large_text*1.5;
+}
