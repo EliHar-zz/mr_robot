@@ -10,28 +10,53 @@ import {MusicService} from "../../service/music.service";
 })
 export class MusicItemComponent implements OnInit {
 
-  public id : number;
   public song : MusicItem;
-  constructor(private musicService : MusicService, private route: ActivatedRoute) { }
+  constructor(public musicService : MusicService, private route: ActivatedRoute) { }
 
   ngOnInit() {
     this.song = null;
     this.route.params.subscribe((params : Params) => {
-        this.id = +params["index"];
-        if(!isNaN(this.id)) {
-          this.song = this.musicService.getSong(this.id);
+        let id = +params["index"];
+        if(!isNaN(id)) {
+          this.song = this.musicService.getSong(id);
         }
       }
     );
   }
 
+  public isPlaying() : boolean{
+    return this.song != null &&
+      this.musicService.getStatus == MusicService.MUSIC_PLAY &&
+      this.musicService.getPlayingSong.getId == this.song.getId;
+  }
+
   public nextSong() {
-    this.id = (this.id + 1) % this.musicService.getSongs.length;
-    this.song = this.musicService.getSong(this.id);
+    if(this.song != null) {
+      let id = (this.song.getId + 1) % this.musicService.getSongs.length;
+      this.song = this.musicService.getSong(id);
+    }
   }
 
   public prevSong() {
-    this.id = (this.id + this.musicService.getSongs.length - 1) % this.musicService.getSongs.length;
-    this.song = this.musicService.getSong(this.id);
+    if(this.song != null) {
+      let id = (this.song.getId + this.musicService.getSongs.length - 1) % this.musicService.getSongs.length;
+      this.song = this.musicService.getSong(id);
+    }
+  }
+
+  public play() {
+    if(this.song != null) {
+      this.musicService.play(this.song.getId);
+    }
+  }
+
+  public pause() {
+    if(this.song != null) {
+      this.musicService.pause();
+    }
+  }
+
+  public stop() {
+    this.musicService.stop();
   }
 }
