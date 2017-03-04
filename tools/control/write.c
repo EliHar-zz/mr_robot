@@ -125,26 +125,28 @@ int main(int argc, char *argv[]) {
 	}
 
 	input_tx = argv[1];
-	puts("Calculating size before parsing ...");
+	// puts("Calculating size before parsing ...");
 	size = strlen(input_tx);
 
-	printf("size: %d\n", size);
+	// printf("size: %d\n", size);
 
 	// Allocate memory
 	tx = malloc(size);
 	rx = malloc(size);
 
-	puts("Calculating size after parsing ...");
+	// puts("Calculating size after parsing ...");
 	size = parse((char *)tx, input_tx, size);
 
-	printf("size: %d\n", size);
+	// printf("size: %d\n", size);
 
-	puts("Starting transfer ...");
+	// puts("Starting transfer ...");
 	transfer(fd, tx, rx, size);
 	free(rx);
 	free(tx);
 
 	close(fd);
+
+	puts("Sent message from write.c");
 
 	return ret;
 }
