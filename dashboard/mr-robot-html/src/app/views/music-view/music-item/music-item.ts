@@ -1,7 +1,11 @@
 import {MusicService} from "../../service/music.service";
 export class MusicItem {
 
-  constructor(private title:string, private artist:string, private image:string){}
+  private static idCounter : number = 0;
+  private id : number;
+  constructor(private title:string, private artist:string, private image:string){
+    this.id = MusicItem.idCounter++;
+  }
 
   public get getTitle(): string {
     return this.title;
@@ -20,10 +24,15 @@ export class MusicItem {
   }
 
   public get getImage() {
-    return this.image.length == 0 || this.image == null ? MusicService.DEFAULT_IMAGE : this.image;
+    return MusicService.DEFAULT_PATH +
+      (this.image.trim().length == 0 || this.image == null ? MusicService.DEFAULT_IMAGE : this.image);
   }
 
   public set setImage(value : string) {
     this.image = value;
+  }
+
+  public get getId() {
+    return this.id;
   }
 }
