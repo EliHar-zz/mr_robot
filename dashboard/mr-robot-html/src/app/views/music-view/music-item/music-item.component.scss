@@ -5,6 +5,10 @@
   font-size: $large_text*2;
 }
 
+.stop-button {
+  @extend .play-button;
+}
+
 .backward-button {
   font-size: $medium_text;
   line-height: $large_text*2.5;

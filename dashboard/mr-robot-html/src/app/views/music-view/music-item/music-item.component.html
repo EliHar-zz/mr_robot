@@ -9,8 +9,9 @@
     </div>
   </div>
   <div class="control">
-    <div [routerLink]="['/open','song', prevId]" class="col-xs-4 text-right backward-button"><span class="fa fa-backward"></span></div>
-    <div class="col-xs-4 text-center play-button"><span class="fa fa-play-circle"></span></div>
-    <div [routerLink]="['/open','song', nextId]" class="col-xs-4 text-left forward-button"><span class="fa fa-forward"></span></div>
+    <div (click)="prevSong()" class="col-xs-4 text-right backward-button"><span class="fa fa-backward"></span></div>
+    <div class="col-xs-2 text-center play-button"><span class="fa fa-play-circle"></span></div>
+    <div class="col-xs-2 text-center stop-button"><span class="fa fa-stop-circle"></span></div>
+    <div (click)="nextSong()" class="col-xs-4 text-left forward-button"><span class="fa fa-forward"></span></div>
   </div>
 </div>

@@ -5,6 +5,7 @@ import {MusicItem} from "../music-view/music-item/music-item";
 export class MusicService {
 
   private songs : MusicItem[];
+  private isPlaying : boolean;
   public static DEFAULT_PATH : string = "/assets/";
   public static DEFAULT_IMAGE : string = "song.png";
   constructor() {
