@@ -73,7 +73,7 @@ void UART_setup() {
     // Set frame: 8data, 1 stp
     UCSR0C |= (1 << UCSZ01) | (1 << UCSZ00);
 
-    sendMessage("   >> Initializing UART ...\n");
+    sendMessage(">> Initializing UART ...\n");
 }
 
 /*
@@ -132,15 +132,13 @@ void sendInt(int num) {
 
 // initialize pwm for enablers
 void initialize_pwm() {
-	// TIFR0, TIMSK0, TCCR0B
-	TCCR0B = (1 << CS00); // no pre-scaling
-	TCCR0B |= (1 << WGM02) | (1 << WGM01) | (1 << WGM00); // fast pwm / top
-	sei();
+	TCCR0A = (1 << WGM00) | (1 << WGM01) | (1 << COM0A1) | (1 << COM0B1);
+	TCCR0B = (1 << CS00) | (1 << CS02);
 }
 
 void init_wheels() {
 
-    sendMessage("   >> Initializing wheels ...\n");
+    sendMessage(">> Initializing wheels ...\n");
 
 	// Set left wheels as output
 	DDRD |= (1 << PD2);
@@ -169,17 +167,17 @@ void power_left_wheel(enum direction dir, uint8_t duty) {
 			sendMessage("Powering left wheel forward by: ");
 			sendInt(duty);
 			PORTD |= (1 << PD2);
-			PORTD &= (0 << PD4);
+			PORTD &= ~(1 << PD4);
 			break;
 		case BACKWARD:
 			sendMessage("Powering left wheel backward by: ");
 			sendInt(duty);
 			PORTD |= (1 << PD4);
-			PORTD &= (0 << PD2);
+			PORTD &= ~(1 << PD2);
 			break;
 		default:
-			PORTD &= (0 << PD2);
-			PORTD &= (0 << PD4);
+			PORTD &= ~(1 << PD2);
+			PORTD &= ~(1 << PD4);
 	}
 
 	OCR0B = duty;
@@ -195,17 +193,17 @@ void power_right_wheel(enum direction dir, uint8_t duty) {
 			sendMessage("Powering right wheel forward by: ");
 			sendInt(duty);
 			PORTC |= (1 << PC2);
-			PORTC &= (0 << PC0);
+			PORTC &= ~(1 << PC0);
 			break;
 		case BACKWARD:
 			sendMessage("Powering right wheel backward by: ");
 			sendInt(duty);
 			PORTC |= (1 << PC0);
-			PORTC &= (0 << PC2);
+			PORTC &= ~(1 << PC2);
 			break;
 		default:
-			PORTC &= (0 << PC2);
-			PORTC &= (0 << PC0);
+			PORTC &= ~(1 << PC2);
+			PORTC &= ~(1 << PC0);
 	}
 
 	OCR0A = duty;
@@ -233,9 +231,9 @@ void set_wheels(int left_wheel, int right_wheel){
 // spi functions
 void spi_init_slave (void) {
 
-   sendMessage("    >> Initializing slave\n"); 
-    DDRB=(1<<6);                                  //MISO as OUTPUT
-    SPCR=(1<<SPE);                                //Enable SPI
+   sendMessage(">> Initializing slave\n");
+    DDRB=(1 << 6);                                //MISO as OUTPUT
+    SPCR=(1 << SPE);                              //Enable SPI
 }
 
 //Function to send and receive data
@@ -318,8 +316,6 @@ int main(void) {
     while(1) {
 
 		sendMessage("\nAwaiting message\n");
-		sendInt(OCR0A);
-		sendInt(OCR0B);
         int index = 0;
 
 		do {
