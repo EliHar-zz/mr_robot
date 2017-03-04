@@ -33,6 +33,7 @@ import { MusicItemComponent } from './views/music-view/music-item/music-item.com
 import { MusicRecordComponent } from './views/music-view/music-records/music-record/music-record.component';
 import { MusicRecordsComponent } from './views/music-view/music-records/music-records.component';
 import {MusicService} from "./views/service/music.service";
+import { RoadViewComponent } from './views/road-view/road-view.component';
 
 @NgModule({
   declarations: [
@@ -56,7 +57,8 @@ import {MusicService} from "./views/service/music.service";
     SongsComponent,
     MusicItemComponent,
     MusicRecordComponent,
-    MusicRecordsComponent
+    MusicRecordsComponent,
+    RoadViewComponent
   ],
   imports: [
     BrowserModule,
