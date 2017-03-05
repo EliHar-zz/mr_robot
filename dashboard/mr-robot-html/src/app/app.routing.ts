@@ -6,6 +6,9 @@ import {AppsViewComponent} from "./views/apps-view/apps-view.component";
 import {ClockViewComponent} from "./views/clock-view/clock-view.component";
 import {ControlViewComponent} from "./views/control-view/control-view.component";
 import {PhoneViewComponent} from "./views/phone-view/phone-view.component";
+import {MusicViewComponent} from "./views/music-view/music-view.component";
+import {MusicItemComponent} from "./views/music-view/music-item/music-item.component";
+import {RoadViewComponent} from "./views/road-view/road-view.component";
 
 const APP_ROUTES : Routes = [
   { path: '', redirectTo: 'view/home', pathMatch: 'full'},
@@ -16,7 +19,10 @@ const APP_ROUTES : Routes = [
     { path: 'map', component: MapViewComponent},
     { path: 'phone', component: PhoneViewComponent},
     { path: 'clock', component: ClockViewComponent},
-    { path: 'control', component: ControlViewComponent}
+    { path: 'control', component: ControlViewComponent},
+    { path: 'music', component: MusicViewComponent},
+    { path: 'song/:index', component: MusicItemComponent},
+    { path: 'road', component: RoadViewComponent}
   ]}
 ];
 

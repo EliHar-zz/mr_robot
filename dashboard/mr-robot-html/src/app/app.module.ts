@@ -27,6 +27,13 @@ import { ContactItemComponent } from './views/phone-view/contacts-list/contact-i
 import {DialService} from "./views/service/dial.service";
 import { NumberSelectComponent } from './views/phone-view/number-select/number-select.component';
 import { OnCallComponent } from './views/phone-view/on-call/on-call.component';
+import { MusicViewComponent } from './views/music-view/music-view.component';
+import { SongsComponent } from './views/music-view/songs/songs.component';
+import { MusicItemComponent } from './views/music-view/music-item/music-item.component';
+import { MusicRecordComponent } from './views/music-view/music-records/music-record/music-record.component';
+import { MusicRecordsComponent } from './views/music-view/music-records/music-records.component';
+import {MusicService} from "./views/service/music.service";
+import { RoadViewComponent } from './views/road-view/road-view.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +52,13 @@ import { OnCallComponent } from './views/phone-view/on-call/on-call.component';
     DialPadComponent,
     ContactItemComponent,
     NumberSelectComponent,
-    OnCallComponent
+    OnCallComponent,
+    MusicViewComponent,
+    SongsComponent,
+    MusicItemComponent,
+    MusicRecordComponent,
+    MusicRecordsComponent,
+    RoadViewComponent
   ],
   imports: [
     BrowserModule,
@@ -57,7 +70,14 @@ import { OnCallComponent } from './views/phone-view/on-call/on-call.component';
     }),
     MR_Routing
   ],
-  providers: [ViewDataService, DateService, ControlSocketService, ContactsService, DialService],
+  providers: [
+    ViewDataService,
+    DateService,
+    ControlSocketService,
+    ContactsService,
+    DialService,
+    MusicService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

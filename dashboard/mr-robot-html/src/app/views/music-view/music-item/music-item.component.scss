@@ -1,0 +1,38 @@
+@import "../../../../styles";
+
+.play-button {
+  color: $button-color-red;
+  font-size: $large_text*2;
+}
+
+.stop-button {
+  @extend .play-button;
+  color: white;
+}
+
+.backward-button {
+  font-size: $medium_text;
+  line-height: $large_text*2.5;
+}
+
+.forward-button {
+  @extend .backward-button;
+}
+
+.picture img {
+  width: $window_width/6;
+}
+
+.info {
+  padding-top: ($window_height - $status_height) / 4;
+  overflow: hidden;
+  height: ($window_height - $status_height) / 1.5;
+}
+
+.title {
+  font-size: $large_text;
+}
+
+.artist {
+  font-size: $medium_text;
+}

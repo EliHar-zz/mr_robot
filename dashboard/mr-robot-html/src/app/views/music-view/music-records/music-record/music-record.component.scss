@@ -1,0 +1,14 @@
+@import "../../../../../styles";
+
+.song-record {
+  padding-top: $small_text/2;
+}
+
+.picture img {
+  width: $window_width/8;
+}
+
+.title {
+  font-size: $small_text;
+  font-weight:bold;
+}

@@ -1,0 +1,24 @@
+{
+    "songs":[
+        {
+            "title": "Eye of the tiger",
+            "artist": "Survivor",
+            "image": ""
+        },
+        {
+            "title": "Rolling in the deep",
+            "artist": "Adel",
+            "image": ""
+        },
+        {
+            "title": "Blurred line",
+            "artist": "Robin Thicked Ft. Pharrell",
+            "image": ""
+        },
+        {
+            "title": "Happy",
+            "artist": "William Pharrell",
+            "image": ""
+        }
+    ]
+}

@@ -1,0 +1,6 @@
+@import "../../../../styles";
+
+.songs {
+  height: $window_height - $status_height;
+  overflow-y: scroll;
+}

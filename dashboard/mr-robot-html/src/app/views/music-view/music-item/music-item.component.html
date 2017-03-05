@@ -1,0 +1,20 @@
+<div *ngIf="song!=null">
+  <div class="col-xs-12 info">
+    <div class="col-xs-4 picture text-center">
+      <img [src]="song.getImage">
+    </div>
+    <div class="col-xs-8">
+      <div class="title">{{song.getTitle}}</div>
+      <div class="artist">{{song.getArtist}}</div>
+    </div>
+  </div>
+  <div class="control">
+    <div (click)="prevSong()" class="col-xs-4 text-right backward-button"><span class="fa fa-backward"></span></div>
+    <div class="col-xs-2 text-center play-button">
+      <span (click)="play()" *ngIf="!isPlaying()" class="fa fa-play-circle"></span>
+      <span (click)="pause()" *ngIf="isPlaying()" class="fa fa-pause-circle"></span>
+    </div>
+    <div (click)="stop()" class="col-xs-2 text-center stop-button"><span class="fa fa-stop-circle"></span></div>
+    <div (click)="nextSong()" class="col-xs-4 text-left forward-button"><span class="fa fa-forward"></span></div>
+  </div>
+</div>

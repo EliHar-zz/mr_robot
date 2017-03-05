@@ -1,0 +1,9 @@
+<div [routerLink]="['/open','song', song.getId]" class="song-record">
+  <div class="picture">
+    <img [src]="song.getImage"/>
+  </div>
+  <div class="description">
+    <div class="title">{{song.getTitle}}</div>
+    <div class="artist">{{song.getArtist}}</div>
+  </div>
+</div>

@@ -37,6 +37,7 @@
 #include <stdlib.h>
 #include <cstdlib>
 #include <sstream>
+#include <stdio.h>
 
 #define PI 3.14159265
 
@@ -49,12 +50,15 @@ long frameNumber = 0;
 // Assign unique ID for each direction. 
 // The ID must be in sync with the GUI direction values 
 // (Please refer to the documentation for more information about the GUI code)
-const int DIR_FULL_SPEED = 0;
-const int DIR_LEFT = 1;
-const int DIR_RIGHT = 2;
-const int DIR_HALF_SPEED = 3;
-const int DIR_STOP = 4;
-const int DIR_REVERSE = 5;
+
+int direction = 0;
+
+const int FORWARD = 1;
+const int REVERSE = 2;
+const int RIGHT = 3;
+const int LEFT = 4;
+const int ROTATE = 5;
+const int STOP = 6;
 
 /**
 * Get the distance between the object and the camera
@@ -130,6 +134,14 @@ void get_color_specs(vector<vector<int> > &specs, string color){
 	}
 }
 
+void control(int left, int right) {
+
+	stringstream ss;
+	ss << "/root/mr_robot/tools/control/write " << left << "," << right << "#" << endl;
+	cout << left << ", " << right << "#" << endl;
+	system(ss.str().c_str());
+}
+
 /**
 * Drive the car based on the angle and distance
 * Decisions are mainly taken based on experiments
@@ -138,75 +150,45 @@ void get_color_specs(vector<vector<int> > &specs, string color){
 * @param diameter Digital diameter of the circular object
 * @return Direction code
 **/
-int drive(double angle, double distance, double diameter) {
-	
-	// Speeds values
-	int FULL_SPEED = 255;
-	int HALF_SPEED = 220;
-	int STOPPED = 0;
-	
-	// Distance threshold
-	int STOPPING_DISTANCE = 30;
+void drive(double angle, double distance, double diameter) {
 
-	// Wheels speeds variables
-	double fr_left, fr_right, back;
-	int direction;
+	int full_speed = 225;
+	int rotation_speed = 100;
+	int turn_speed = 50;
+	int stopping_distance = 70;
+	int stop_angle = 12;
 
-	// If no object found, reverse
-	if(diameter == 0) {
-		fr_left = -FULL_SPEED;	
-		fr_right = -FULL_SPEED;	
-		back = -FULL_SPEED;
-		direction = DIR_REVERSE;
+ 	// If no object found: rotate
+ 	if(diameter == 0 && direction != ROTATE) {
+		direction = ROTATE;
+		cout << endl << "rotating ";
+		control(rotation_speed, -rotation_speed);
 
-	// If object is within 30 cm, stop
-	} else if(distance <= STOPPING_DISTANCE) {
-		fr_left = STOPPED;
-		back = STOPPED;
-		direction = DIR_STOP;
+ 	// If object is within stopping_distance and visible: stop
+ 	} else if(distance <= stopping_distance && diameter > 0 && direction != STOP) {
+		direction = STOP;
+		cout << endl << "stopping "; 
+		control(0, 0);
 
-	// If object more than 2 degrees to right, turn right
-	} else if (angle > 2){
-		fr_left = FULL_SPEED;
-		fr_right = STOPPED;
-		back = HALF_SPEED;
-		direction = DIR_RIGHT;
+ 	// If object more than stop_angle degrees to right and farther than stopping distance: turn right
+ 	} else if (angle > stop_angle && distance >= stopping_distance && direction != RIGHT){
+		direction = RIGHT;
+		cout << endl << "turning right ";
+		control(turn_speed, -turn_speed);
 
-	// If object more than 2 degrees to left, turn left
-	} else if (angle < -2) {
-		fr_right = FULL_SPEED;
-		fr_left = STOPPED;
-		back = HALF_SPEED;
-		direction = DIR_LEFT;
-		
-	// Ball must be directly ahead, drive straight
-	} else {
-		
-		// If ball is greater than 50cm, go full speed
-		if (distance > 50.0) {
-			fr_right = FULL_SPEED;
-			fr_left = FULL_SPEED;
-			back = FULL_SPEED;
-			direction = DIR_FULL_SPEED;
+ 	// If object more than stop_angle degrees to left and farther than stopping distance: turn left
+ 	} else if (angle < -stop_angle && distance >= stopping_distance && direction != LEFT) {
+		direction = LEFT;
+		cout << endl << "turning left ";
+		control (-turn_speed, turn_speed);
 
-		// If ball is (30, 50] cm away, approach at slower pace
-		} else if(distance > STOPPING_DISTANCE) {
-			fr_right = HALF_SPEED;
-			fr_left = HALF_SPEED;
-			back = HALF_SPEED;
-			direction = DIR_HALF_SPEED;
-		}
-	}
+ 	// If ball is past stopping distance and within stop_angles: forward
+ 	} else if (distance > stopping_distance && angle < stop_angle && angle > -stop_angle && direction != FORWARD) {
+		direction = FORWARD;
+		cout << endl << "going forward ";
+		control(full_speed, full_speed);
+ 	}
 
-	// Execute shell command to drive the car
-	// The file /root/mr_robot/tools/lab/lab_5/write can be found at 
-	// https://github.com/EliHar/mr_robot/blob/master/tools/lab/lab_5/write.c
-	stringstream s;
-	s << "/root/mr_robot/tools/lab/lab_5/write " << (int)fr_left << "," << (int)fr_right << "," << (int)back << "#";
-	string cmd = s.str();
-	cout << cmd << endl;
-	system(cmd.c_str());
-	return direction;
 }
 
 /**
@@ -302,8 +284,11 @@ int main( int argc, char** argv ) {
 		}
 
 		// Log the calculated information
-		cout << "distance is: "<< distance << " "<< rotation_angle << " "<< diameter <<  endl;
-
+		cout << endl;
+		printf("\t%-10s%4.2f\n", "angle:", rotation_angle);
+		printf("\t%-10s%4.2f\n", "distance:", distance);
+		printf("\t%-10s%4.2f\n", "diameter:", diameter);
+		
 		// Draw circle at x and y
 		Mat tmpSource = imageSrc.clone();
 		circle(tmpSource, Point(x_object,y_object), 3, Scalar(229, 240, 76), 2);
@@ -313,7 +298,7 @@ int main( int argc, char** argv ) {
 		circle(tmpSource, Point(x_center,y_center), 2, Scalar(255, 255, 255), 2);
 
 		// Get direction code
-		int direction = drive(rotation_angle, distance, diameter);
+		drive(rotation_angle, distance, diameter);
 
 		// Write images and text into the file system/
 		// Director /var/www/html correspond to the path for
@@ -329,26 +314,26 @@ int main( int argc, char** argv ) {
 		myfile << "Frame number: " << ++frameNumber << "\n";
 
 		string dir_message = "Direction: ";
-		switch(direction) {
-			case DIR_REVERSE:
-				myfile << dir_message << "Reversing"  << "\n";
+		switch (direction) {
+			case FORWARD: 
+				myfile << dir_message << "Forward" << endl;
 				break;
-			case DIR_FULL_SPEED:
-				myfile << dir_message << "Full speed"  << "\n";
+			case REVERSE:
+				myfile << dir_message << "Reversing" << endl;
 				break;
-			case DIR_HALF_SPEED:
-				myfile << dir_message << "Half speed"  << "\n";
+			case RIGHT:
+				myfile << dir_message << "Right" << endl;
 				break;
-			case DIR_RIGHT:
-				myfile << dir_message << "Right"  << "\n";
+			case LEFT:
+				myfile << dir_message << "Left" << endl;
 				break;
-			case DIR_LEFT:
-				myfile << dir_message << "Left"  << "\n";
+			case ROTATE:
+				myfile << dir_message << "Rotating" << endl;
 				break;
-			case DIR_STOP:
-				myfile << dir_message << "Stop"  << "\n";
+			case STOP:
+				myfile << dir_message << "Stop" << endl;
 				break;
-		} 
+		}
 		myfile << "DIR_CODE: " << direction << "\n";
 		myfile.close();
 	}
