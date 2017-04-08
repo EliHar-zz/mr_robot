@@ -15,7 +15,7 @@ var app = express();
 var io = socket_io();
 app.io = io;
 
-var nohup = require('child_process').exec;
+var exec = require('child_process').exec;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -55,7 +55,23 @@ io.on( "connection", function( socket ) {
     console.log( "Control connected" );
 
     socket.on("car-navigation", function(value) {
-        console.log(value);
+       var direction = value.direction;
+       var speed = value.speed;                                                                   
+       if(direction == "up") {
+           exec("/root/mr_robot/tools/control/write "+speed+","+speed+"#",{silent:false});
+       } else if(direction == "down"){
+           exec("/root/mr_robot/tools/control/write "+(-speed)+","+(-speed)+"#",{silent:false});
+       } else if(direction == "right"){
+           exec("/root/mr_robot/tools/control/write "+speed+","+(-speed)+"#",{silent:false});
+       } else if(direction == "left"){
+           exec("/root/mr_robot/tools/control/write "+(-speed)+","+speed+"#",{silent:false});
+       } else if(direction == "stop"){
+           exec("/root/mr_robot/tools/control/write 0,0#",{silent:false});
+       }
+
+       console.log("Recieved:");
+       console.log(value);
+       console.log("-------------");
     });
 
     socket.on("disconnect", function(){
