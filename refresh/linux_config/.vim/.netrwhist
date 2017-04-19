@@ -1,0 +1,9 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =7
+let g:netrw_dirhist_1='/home/matthew/.vim/colors'
+let g:netrw_dirhist_2='/etc/modprobe.d'
+let g:netrw_dirhist_3='/home/matthew'
+let g:netrw_dirhist_4='/home/matthew/Code'
+let g:netrw_dirhist_5='/home/matthew/Code/opencl'
+let g:netrw_dirhist_6='/home/matthew'
+let g:netrw_dirhist_7='/home/matthew/Code'
