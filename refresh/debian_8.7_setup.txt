@@ -1,0 +1,137 @@
+image:
+    Jessie IoT (non-GUI) for BeagleBone via microSD card
+    Debian 8.7 2017-03-19 4GB SD IoT image for BeagleBone, BeagleBone Black, BeagleBone Black Wireless, BeagleBone Blue, SeeedStudio BeagleBone Green, SeeedStudio BeagleBone Green Wireless, SanCloud BeagleBone Enhanced, element14 BeagleBone Black Industrial, Arrow BeagleBone Black Industrial and Mentorel BeagleBone uSomIQ - more info - bmap - sha256sum: f709035e9d9470fa0aa9b778e4d369ba914f5acc7a5fecd6713facbe52cc9285
+
+flash with win32 or dd
+
+place card in BeagleBone, hold boot button, plug in cord, wait for 4 lights to go on, release boot,
+wait for OS to load
+
+ssh into BeagleBone
+    ip:     192.168.7.2
+    user:   Debian
+    pswd:   temppwd
+
+delete empty bin folder
+    rmdir bin
+
+connect to wifi
+    ~ ifconfig
+    verify wlan0 is listed
+
+    ~ connmanctl
+
+    ~ enable wifi
+    : Error wifi: Already enabled
+
+    ~ scan wifi
+    : Scan completed for wifi
+    Must wait for message
+
+    ~ services
+    : Shows list of networks in format : Name Code
+
+    ~ agent on
+    : Agent registered
+
+    ~ connect <Code>
+    : Passphrase?
+    ~ <Enter password>
+    : Connected to <Code>
+    Must wait for message
+
+    ~ quit
+
+    ~ ifconfig    
+    verify wlan0 now has IP address
+
+    ~ ping google.com
+    verify you are getting a response
+
+    ** Note: sometimes after reboot, wifi will not be working
+    **       try running this command to fix:
+    **           ~ sudo ip link set wlan0 up
+
+setup linux environment
+    ~ git clone https://ml-davis@bitbucket.org/ml-davis/linux_config.git
+    copy bashrc, inputrc, profile, vimrc, vim folder to home folder
+    now your environment is a little more sane
+
+clone mr_robot
+    ~ apt-get install https://github.com/amirbawab/mr_robot.git
+    doesn't work. Network crashes...
+
+    scp mr_robot into beaglebone
+
+activate spi
+    
+    device tree overlays are stored in /lib/firmware
+    we can see them by moving into directory and listing files
+    you can also build your own with dts files
+
+    in order to see which devices are loaded, we must view our slots, stored under:
+        /sys/devices/platform/bone_capemgr/slots
+    can make environment variable if you want ($SLOTS)
+    cat it to view contents of slot file
+    
+    we can see an unwanted device:
+         4: P-O-L-   0 Override Board Name,00A0,Override Manuf,cape-universaln
+
+    this device is loaded on boot. To prevent this, edit: 
+        /boot/uEnv.txt
+    comment out cape_universal=enable (typically line 49)
+        cmdline=coherent_pool=1M net.ifnames=0 quiet cape_universal=enable
+    change to:
+        cmdline=coherent_pool=1M net.ifnames=0 quiet #cape_universal=enable
+
+    alternatively can remove it by:
+        echo -4 > $SLOTS
+    however, this typically breaks...
+
+    reboot device and ssh back in
+
+    to export a dto, write the name of the dto without the 00A0.dtbo to the slots file:
+        sudo sh -c "echo BB-SPIDEV0 > $SLOTS"
+
+    view slots file again
+
+    verify spidev0 is loaded:
+        ~ cat /sys/devices/platform/bone_capemgr/slots
+        : 0: PF----  -1
+        : 1: PF----  -1
+        : 2: PF----  -1
+        : 3: PF----  -1
+        : 4: P-O-L-   0 Override Board Name,00A0,Override Manuf,BB-SPIDEV0
+
+test spi
+    navigate to ~/mr_robot/tools/control/
+    may need to change permissions of write file
+        ~ chmod ugo+x write
+    
+    run executable:
+        ~ ./write 255,255#
+
+    doesn't work
+
+Alternative spi setup
+    ensure cape universal is loaded
+        if cape_universal is commented out, (see first active spi section), uncomment it and reboot
+            cmdline=coherent_pool=1M net.ifnames=0 quiet cape_universal=enable
+
+    make sure it worked:
+        ~ cat $SLOTS
+        : 4: P-O-L-   0 Override Board Name,00A0,Override Manuf,cape-universaln
+
+    set your 4 spi pins to spi mode
+        config-pin -l P9.17 #SPI0_CS
+        config-pin -l P9.18 #SPI0_D1
+        config-pin -l P9.22 #SPI0_SCLK
+        config-pin -l P9.21 #SPI0_D0
+
+    verify that they were set:
+        config-pin -q P9.17
+        config-pin -q P9.18
+        config-pin -q P9.21
+        config-pin -q P9.22
+
+        still doesn't work
