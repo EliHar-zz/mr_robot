@@ -56,18 +56,20 @@ io.on( "connection", function( socket ) {
 
     socket.on("car-navigation", function(value) {
        var direction = value.direction;
-       var speed = value.speed;                                                                   
-       if(direction == "up") {
-           exec("/root/mr_robot/tools/control/write "+speed+","+speed+"#",{silent:false});
-       } else if(direction == "down"){
-           exec("/root/mr_robot/tools/control/write "+(-speed)+","+(-speed)+"#",{silent:false});
-       } else if(direction == "right"){
-           exec("/root/mr_robot/tools/control/write "+speed+","+(-speed)+"#",{silent:false});
-       } else if(direction == "left"){
-           exec("/root/mr_robot/tools/control/write "+(-speed)+","+speed+"#",{silent:false});
-       } else if(direction == "stop"){
-           exec("/root/mr_robot/tools/control/write 0,0#",{silent:false});
-       }
+        var speed = value.speed;
+
+        if(direction == "up") {
+            exec("/home/debian/mr_robot/tools/control/write " + speed + "," + speed + "#",{silent:true});
+        } else if(direction == "left") {
+            exec("/home/debian/mr_robot/tools/control/write " + (-speed) + "," + speed + "#",{silent:true});
+        } else if(direction == "right") {
+            exec("/home/debian/mr_robot/tools/control/write " + speed + "," + (-speed) + "#",{silent:true});
+        } else if(direction == "down") {
+            exec("/home/debian/mr_robot/tools/control/write " + (-speed) + "," + (-speed) + "#",{silent:true});
+        } else if(direction == "stop") {                                                                                                          
+            exec("/home/debian/mr_robot/tools/control/write 0,0#",{silent:true});
+        }
+
 
        console.log("Recieved:");
        console.log(value);
