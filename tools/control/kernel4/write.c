@@ -30,10 +30,10 @@ static void pabort(const char *s)
 	abort();
 }
 
-static const char *device = "/dev/spidev1.1";
+static const char *device = "/dev/spidev1.0";
 static uint32_t mode;
 static uint8_t bits = 8;
-static uint32_t speed = 500000;
+static uint32_t speed = 10000;
 static uint16_t delay;
 static int verbose;
 
@@ -132,9 +132,9 @@ static void transfer(int fd, uint8_t const *tx, uint8_t const *rx, size_t len)
 	if (ret < 1)
 		pabort("can't send spi message");
 
-	if (verbose)
-		hex_dump(tx, len, 32, "TX");
-	hex_dump(rx, len, 32, "RX");
+	//if (verbose)
+	//	hex_dump(tx, len, 32, "TX");
+	//hex_dump(rx, len, 32, "RX");
 }
 
 static void print_usage(const char *prog)
@@ -296,10 +296,11 @@ int main(int argc, char *argv[])
 	if (ret == -1)
 		pabort("can't get max speed hz");
 
-	printf("spi mode: 0x%x\n", mode);
-	printf("bits per word: %d\n", bits);
-	printf("max speed: %d Hz (%d KHz)\n", speed, speed/1000);
+	//printf("spi mode: 0x%x\n", mode);
+	//printf("bits per word: %d\n", bits);
+	//printf("max speed: %d Hz (%d KHz)\n", speed, speed/1000);
 
+	input_tx = argv[1];
 	if (input_tx) {
 		size = strlen(input_tx+1);
 		tx = malloc(size);
