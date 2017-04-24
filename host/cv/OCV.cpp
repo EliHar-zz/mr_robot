@@ -352,6 +352,7 @@ int main( int argc, char** argv ) {
 		if(--currentFrame == 0) {
 			imwrite(outPath, tmpSource);
 			imwrite(bwPath, imageDest);
+			currentFrame = FRAME_EVERY;
 		}
 		ofstream myfile;
 		myfile.open (infoPath.c_str());
