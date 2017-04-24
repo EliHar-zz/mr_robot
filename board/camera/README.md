@@ -11,6 +11,8 @@
 
   * v4l-utils
     * `apt-get install v4l-utils`
+  * avconv
+    * `sudo apt-get install libav-tools`
   * BoneCV
     * `git clone https://github.com/derekmolloy/boneCV`
     * Build the project: `cd boneCV && ./build`
