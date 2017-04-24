@@ -240,8 +240,8 @@ int main( int argc, char** argv ) {
 		 return 1;
 
 	// Configure the camera for fast capture and good resolution
-	cap.set(CV_CAP_PROP_FRAME_WIDTH, 432);
-	cap.set(CV_CAP_PROP_FRAME_HEIGHT,240);
+	cap.set(CV_CAP_PROP_FRAME_WIDTH, 320);
+	cap.set(CV_CAP_PROP_FRAME_HEIGHT,180);
 	cap.set(CV_CAP_PROP_FPS , 30);
 
 	// loop_count is used to make sure that the find_ball function has looped at least twice
