@@ -161,13 +161,13 @@ void drive(int left, int right) {
 **/
 void find_ball(double angle, double distance, double diameter, int &loop_count) {
 
-	int full_speed = 255;
-	int rotation_speed = 140;
+	int full_speed = 200;
+	int rotation_speed = 115;
 	int turn_speed = 40;
-	int pausing_distance = 45;
-	int target_angle = 4;
+	int pausing_distance = 75;
+	int target_angle = 5;
 
-	if (loop_count > 1) { 
+	if (loop_count > 2) { 
 
 		// If no object found: rotate
 		if(diameter == 0 && direction != ROTATE) {
