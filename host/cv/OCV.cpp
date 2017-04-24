@@ -49,6 +49,10 @@ using namespace std;
 // Keep track of video camera frame number
 long frameNumber = 0;
 
+// Write to files every time the counter reaches zero
+const int FRAME_EVERY = 3;
+int currentFrame = FRAME_EVERY;
+
 // Assign unique ID for each direction. 
 // The ID must be in sync with the GUI direction values 
 // (Please refer to the documentation for more information about the GUI code)
@@ -345,8 +349,10 @@ int main( int argc, char** argv ) {
 		string bwPath = path + "bw.jpg";
 		string infoPath = path + "info.txt";                                        
 
-		imwrite(outPath, tmpSource);
-		imwrite(bwPath, imageDest);
+		if(--currentFrame == 0) {
+			imwrite(outPath, tmpSource);
+			imwrite(bwPath, imageDest);
+		}
 		ofstream myfile;
 		myfile.open (infoPath.c_str());
 		myfile << "Distance from camera: " << distance << " cm\n";
