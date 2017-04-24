@@ -1,3 +1,22 @@
-<p>
-  road-view works!
-</p>
+<div class="row">
+  <div class="col-xs-12">
+    <div class="col-xs-6 text-center alert-success tracker-button">Start tracker</div>
+    <div class="col-xs-6 text-center alert-danger tracker-button">Stop tracker</div>
+  </div>
+
+  <div class="col-xs-12 images">
+    <div class="col-xs-6">
+      <canvas #out id="out" width="320" height="180">Canvas not supported</canvas>
+    </div>
+    <div class="col-xs-6">
+      <canvas #bw id="bw" width="320" height="180">Canvas not supported</canvas>
+    </div>
+  </div>
+
+  <div class="col-xs-12">
+    <span #info class="info" id="info">Press on 'Start tracker' to run the program ...</span>
+  </div>
+</div>
+
+
+
