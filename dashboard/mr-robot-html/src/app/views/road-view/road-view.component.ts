@@ -69,11 +69,6 @@ export class RoadViewComponent implements OnInit, OnDestroy {
     // Main images
     this.outImg = new Image();
     this.bwImg = new Image();
-
-    // Canvases
-    this.outImgCtx = this.out.nativeElement.getContext("2d");
-    this.bwImgCtx = this.bw.nativeElement.getContext("2d");
-
   }
 
   private _updateImages() {
@@ -84,13 +79,21 @@ export class RoadViewComponent implements OnInit, OnDestroy {
     this.imageTimer = Observable.timer(0,300); // Every x ms starting from now
     this.imageTimerSub = this.imageTimer.subscribe(t => {
 
-      // Load images
-      this.outImg.src = url +"/debug/out.jpg?d=" + Date.now();
-      this.bwImg.src = url+"/debug/bw.jpg?d=" + Date.now();
+      // If program started
+      if(this.started) {
 
-      // Draw images
-      this.outImgCtx.drawImage(this.outImg, 0, 0);
-      this.bwImgCtx.drawImage(this.bwImg, 0, 0);
+        // Canvases
+        this.outImgCtx = this.out.nativeElement.getContext("2d");
+        this.bwImgCtx = this.bw.nativeElement.getContext("2d");
+
+        // Load images
+        this.outImg.src = url +"/debug/out.jpg?d=" + Date.now();
+        this.bwImg.src = url+"/debug/bw.jpg?d=" + Date.now();
+
+        // Draw images
+        this.outImgCtx.drawImage(this.outImg, 0, 0);
+        this.bwImgCtx.drawImage(this.bwImg, 0, 0);
+      }
     });
 }
 
