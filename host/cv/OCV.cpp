@@ -339,10 +339,16 @@ int main( int argc, char** argv ) {
 		// Director /var/www/html correspond to the path for
 		// Apache2 server. All files placed in this directory will be 
 		// accessible on all users in the network over host IP and port 80
-		imwrite("/var/www/html/mr_robot/out.jpg", tmpSource);
-		imwrite("/var/www/html/mr_robot/bw.jpg", imageDest);
+		
+		string path = "/home/debian/mr_robot/dashboard/mr-robot-node/public/debug/";
+		string outPath = path + "out.jpg";
+		string bwPath = path + "bw.jpg";
+		string infoPath = path + "info.txt";                                        
+
+		imwrite(outPath, tmpSource);
+		imwrite(bwPath, imageDest);
 		ofstream myfile;
-		myfile.open ("/var/www/html/mr_robot/info.txt");
+		myfile.open (infoPath.c_str());
 		myfile << "Distance from camera: " << distance << " cm\n";
 		myfile << "Rotation angle: " << rotation_angle << "\n";
 		myfile << "Digital diameter: " << diameter << " px\n";
