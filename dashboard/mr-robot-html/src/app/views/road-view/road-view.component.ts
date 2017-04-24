@@ -1,6 +1,7 @@
 import {Component, OnInit, OnDestroy, ViewChild} from '@angular/core';
 import {ControlSocketService} from "../service/control-socket.service";
 import {Observable} from "rxjs";
+import {Http, Response, Headers, RequestOptions} from "@angular/http";
 
 @Component({
   selector: 'mr-road-view',
@@ -26,7 +27,7 @@ export class RoadViewComponent implements OnInit, OnDestroy {
   private imageTimer;
   private imageTimerSub;
 
-  constructor(public controlSocketService : ControlSocketService) { }
+  constructor(public controlSocketService : ControlSocketService, private http : Http) { }
 
   ngOnInit() {
 
@@ -76,13 +77,15 @@ export class RoadViewComponent implements OnInit, OnDestroy {
 
   private _updateImages() {
 
+    let url =  this.controlSocketService.getUrl()+":"+this.controlSocketService.getPort();
+
     // Create timer
-    this.imageTimer = Observable.timer(0,1000); // Every second starting from now
+    this.imageTimer = Observable.timer(0,300); // Every x ms starting from now
     this.imageTimerSub = this.imageTimer.subscribe(t => {
 
       // Load images
-      this.outImg.src = this.controlSocketService.getUrl()+":"+this.controlSocketService.getPort()+"/debug/out.jpg?d=" + Date.now();
-      this.bwImg.src = this.controlSocketService.getUrl()+":"+this.controlSocketService.getPort()+"/debug/bw.jpg?d=" + Date.now();
+      this.outImg.src = url +"/debug/out.jpg?d=" + Date.now();
+      this.bwImg.src = url+"/debug/bw.jpg?d=" + Date.now();
 
       // Draw images
       this.outImgCtx.drawImage(this.outImg, 0, 0);
