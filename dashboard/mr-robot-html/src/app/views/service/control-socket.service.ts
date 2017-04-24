@@ -84,6 +84,6 @@ export class ControlSocketService {
   }
 
   public emitOCV(status : string, device : number, color : string) {
-    this.socket.emit('car-navigation', {"status": status, "device" : device, "color": color});
+    this.socket.emit('car-ocv', {"status": status, "device" : device, "color": color});
   }
 }

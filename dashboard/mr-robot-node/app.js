@@ -69,6 +69,26 @@ io.on( "connection", function( socket ) {
        console.log("-------------");
     });
 
+    socket.on("car-ocv", function(value) {
+        var stat = value.status;
+        var device = value.device;
+        var color = value.color;
+
+        if(stat == "start") {
+            var cmd = "/home/debian/mr_robot/host/cv/OCV " + device + " " + color;
+            console.log("Executing: " + cmd);
+            exec(cmd,{silent:true});
+        } else if(stat == "stop") {
+            var cmd = "kill -9 $(ps -edf | grep 'OCV " + device + " " + color + "' | grep -v grep | awk '{print$2}') ";
+            console.log("Executing: " + cmd);
+            exec(cmd,{silent:true});
+        }
+
+       console.log("Recieved:");
+       console.log(value);
+       console.log("-------------");
+    });
+
     socket.on("disconnect", function(){
         console.log("Control disconnected");
     });
