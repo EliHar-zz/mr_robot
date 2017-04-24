@@ -141,7 +141,7 @@ void get_color_specs(vector<vector<int> > &specs, string color){
 void drive(int left, int right) {
 
 	stringstream ss;
-	ss << "/root/mr_robot/tools/control/write " << left << "," << right << "#" << endl;
+	ss << "/home/debian/mr_robot/tools/control/write " << left << "," << right << "#" << endl;
 	cout << left << "," << right << "#" << endl;
 	system(ss.str().c_str());
 }
