@@ -79,7 +79,8 @@ io.on( "connection", function( socket ) {
             console.log("Executing: " + cmd);
             exec(cmd,{silent:true});
         } else if(stat == "stop") {
-            var cmd = "kill -9 $(ps -edf | grep 'OCV " + device + " " + color + "' | grep -v grep | awk '{print$2}') ";
+            var cmd = "kill -9 $(ps -edf | grep 'OCV " + device + " " + color + "' | grep -v grep | awk '{print$2}');";
+			cmd += " /home/debian/mr_robot/tools/control/write 0,0#";
             console.log("Executing: " + cmd);
             exec(cmd,{silent:true});
         }
