@@ -19,9 +19,9 @@ export class AppComponent implements OnInit {
 
   private _addDefaultViews() {
     this.viewDataService.addView(new AppItemClass("Map", "fa fa-map", ['/open','map']));
-    this.viewDataService.addView(new AppItemClass("Road", "fa fa-road", ['/open', 'road']));
-    this.viewDataService.addView(new AppItemClass("Phone", "fa fa-phone", ['/open', 'phone']));
     this.viewDataService.addView(new AppItemClass("Music", "fa fa-music", ['/open', 'music']));
+    this.viewDataService.addView(new AppItemClass("Phone", "fa fa-phone", ['/open', 'phone']));
+    this.viewDataService.addView(new AppItemClass("Road", "fa fa-road", ['/open', 'road']));
     this.viewDataService.addView(new AppItemClass("Control", "fa fa-gamepad", ['/open', 'control']));
   }
 
