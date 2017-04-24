@@ -12,6 +12,7 @@ export class RoadViewComponent implements OnInit, OnDestroy {
   private onReadyConnection;
   private socketConnection;
   private connected : boolean = false;
+  private started : boolean = false;
 
   // HTML elements
   @ViewChild("out") out;
@@ -94,12 +95,18 @@ export class RoadViewComponent implements OnInit, OnDestroy {
 }
 
   onStartPress() {
-    console.log("Start pressed!");
-    this.controlSocketService.emitOCV("start",0, "blue");
+    if(!this.started) {
+      console.log("Start pressed!");
+      this.controlSocketService.emitOCV("start",0, "blue");
+      this.started = true;
+    }
   }
 
   onStopPress() {
-    console.log("Stop pressed!");
-    this.controlSocketService.emitOCV("stop", 0, "blue");
+    if(this.started) {
+      console.log("Stop pressed!");
+      this.controlSocketService.emitOCV("stop", 0, "blue");
+      this.started = false;
+    }
   }
 }
