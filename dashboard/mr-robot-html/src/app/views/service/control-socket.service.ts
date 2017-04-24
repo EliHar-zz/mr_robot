@@ -70,7 +70,8 @@ export class ControlSocketService {
     });
   }
 
-  public emitNavigation(direction : string, speed : number) {
-    this.socket.emit('car-navigation', {"direction": direction, "speed": speed});
+  public emitNavigation(direction : string, speedLeft : number, speedRight : number) {
+    this.socket.emit('car-navigation', {"direction": direction,
+      "speedLeft": speedLeft, "speedRight": speedRight});
   }
 }

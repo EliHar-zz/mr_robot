@@ -55,21 +55,14 @@ io.on( "connection", function( socket ) {
     console.log( "Control connected" );
 
     socket.on("car-navigation", function(value) {
-       var direction = value.direction;
-        var speed = value.speed;
+        var direction = value.direction;
+        var speedLeft = value.speedLeft;
+        var speedRight = value.speedRight;
 
-        if(direction == "up") {
-            exec("/home/debian/mr_robot/tools/control/write " + speed + "," + speed + "#",{silent:true});
-        } else if(direction == "left") {
-            exec("/home/debian/mr_robot/tools/control/write " + (-speed) + "," + speed + "#",{silent:true});
-        } else if(direction == "right") {
-            exec("/home/debian/mr_robot/tools/control/write " + speed + "," + (-speed) + "#",{silent:true});
-        } else if(direction == "down") {
-            exec("/home/debian/mr_robot/tools/control/write " + (-speed) + "," + (-speed) + "#",{silent:true});
-        } else if(direction == "stop") {                                                                                                          
-            exec("/home/debian/mr_robot/tools/control/write 0,0#",{silent:true});
-        }
-
+        // Exec for all directions
+        var cmd = "/home/debian/mr_robot/tools/control/write " + speedLeft + "," + speedRight + "#";
+        console.log("Executing: " + cmd);
+        exec(cmd,{silent:true});
 
        console.log("Recieved:");
        console.log(value);
