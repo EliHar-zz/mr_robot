@@ -72,7 +72,7 @@ export class ControlViewComponent implements OnInit, OnDestroy {
 
   onUpLeftPress() {
     console.log("Up Left pressed!");
-    this.controlSocketService.emitNavigation("up-right", 25, 255);
+    this.controlSocketService.emitNavigation("up-left", 0, 255);
   }
 
   onDownRightPress() {
@@ -82,6 +82,6 @@ export class ControlViewComponent implements OnInit, OnDestroy {
 
   onDownLeftPress() {
     console.log("Down Left pressed!");
-    this.controlSocketService.emitNavigation("down-left", -25, -255);
+    this.controlSocketService.emitNavigation("down-left", 0, -255);
   }
 }
