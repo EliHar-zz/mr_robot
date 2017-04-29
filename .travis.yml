@@ -1,11 +1,11 @@
-language: java
-
-jdk:
-  - oraclejdk8
-
-branches:
-  only:
-    - master
-
-script:
-  - ./gradlew clean build test
+#language: java
+#
+#jdk:
+#  - oraclejdk8
+#
+#branches:
+#  only:
+#    - master
+#
+#script:
+#  - ./gradlew clean build test
