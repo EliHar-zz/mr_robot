@@ -15,19 +15,19 @@
     <div *ngIf="connected">
       <table class="control-table">
         <tr>
-          <td></td>
+          <td><span (click)="onUpLeftPress()" class="fa fa-chevron-left"></span></td>
           <td><span (click)="onUpPress()" class="fa fa-arrow-up"></span></td>
-          <td></td>
+          <td><span (click)="onUpRightPress()" class="fa fa-chevron-right"></span></td>
         </tr>
         <tr>
-          <td><span (click)="onLeftPress()" class="fa fa-arrow-left"></span></td>
+          <td><span (click)="onLeftPress()" class="fa fa-undo"></span></td>
           <td><span (click)="onStopPress()" class="fa fa-stop-circle-o"></span></td>
-          <td><span (click)="onRightPress()" class="fa fa-arrow-right"></span></td>
+          <td><span (click)="onRightPress()" class="fa fa-repeat"></span></td>
         </tr>
         <tr>
-          <td></td>
+          <td><span (click)="onDownLeftPress()" class="fa fa-chevron-left"></span></td>
           <td><span (click)="onDownPress()" class="fa fa-arrow-down"></span></td>
-          <td></td>
+          <td><span (click)="onDownRightPress()" class="fa fa-chevron-right"></span></td>
         </tr>
       </table>
 

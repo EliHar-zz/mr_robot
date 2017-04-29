@@ -42,26 +42,46 @@ export class ControlViewComponent implements OnInit, OnDestroy {
 
   onUpPress() {
     console.log("Up pressed!");
-    this.controlSocketService.emitNavigation("up", 255);
+    this.controlSocketService.emitNavigation("up", 255, 255);
   }
 
   onDownPress() {
     console.log("Down pressed!");
-    this.controlSocketService.emitNavigation("down", 255);
+    this.controlSocketService.emitNavigation("down", -255, -255);
   }
 
   onLeftPress() {
     console.log("Left pressed!");
-    this.controlSocketService.emitNavigation("left", 255);
+    this.controlSocketService.emitNavigation("left", -255, 255);
   }
 
   onRightPress() {
     console.log("Right pressed!");
-    this.controlSocketService.emitNavigation("right", 255);
+    this.controlSocketService.emitNavigation("right", 255, -255);
   }
 
   onStopPress() {
     console.log("Stop pressed!");
-    this.controlSocketService.emitNavigation("stop", 0);
+    this.controlSocketService.emitNavigation("stop", 0, 0);
+  }
+
+  onUpRightPress() {
+    console.log("Up Right pressed!");
+    this.controlSocketService.emitNavigation("up-right", 255, 25);
+  }
+
+  onUpLeftPress() {
+    console.log("Up Left pressed!");
+    this.controlSocketService.emitNavigation("up-left", 0, 255);
+  }
+
+  onDownRightPress() {
+    console.log("Down Right pressed!");
+    this.controlSocketService.emitNavigation("down-right", -255, -25);
+  }
+
+  onDownLeftPress() {
+    console.log("Down Left pressed!");
+    this.controlSocketService.emitNavigation("down-left", 0, -255);
   }
 }

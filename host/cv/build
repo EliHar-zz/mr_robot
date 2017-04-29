@@ -1,2 +1,0 @@
-g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"main_2.d" -MT"main_2.d" -o"main_2.o" "main_2.cpp"
-g++ -L/usr/local/lib -o"OCV" ./main_2.o   -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_ml -lopencv_video -lopencv_features2d -lopencv_calib3d -lopencv_objdetect -lopencv_flann

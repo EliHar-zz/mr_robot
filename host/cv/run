@@ -1,0 +1,41 @@
+#!/bin/bash
+
+print_help(){
+cat <<EOF
+Usage: ./run [clean] [build]
+EOF
+}
+
+compile() {
+	g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"OCV.d" -MT"OCV.d" -o"OCV.o" "OCV.cpp"
+	g++ -L/usr/local/lib -o"OCV" ./OCV.o   -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_ml -lopencv_video -lopencv_features2d -lopencv_calib3d -lopencv_objdetect -lopencv_flann
+}
+
+clean() {
+	rm OCV.d OCV.o OCV
+}
+
+if [[ -z "$@" ]]
+then
+	print_help
+fi
+
+for var in "$@"
+do
+    case $var in
+	"build")
+		echo "Building ..."
+		compile
+	;;
+
+	"clean")
+		echo "Cleaning ..."
+		clean
+	;;
+
+	*)
+		print_help
+	;;
+	esac
+done
+

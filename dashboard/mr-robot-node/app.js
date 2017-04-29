@@ -15,7 +15,7 @@ var app = express();
 var io = socket_io();
 app.io = io;
 
-var nohup = require('child_process').exec;
+var exec = require('child_process').exec;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -55,7 +55,39 @@ io.on( "connection", function( socket ) {
     console.log( "Control connected" );
 
     socket.on("car-navigation", function(value) {
-        console.log(value);
+        var direction = value.direction;
+        var speedLeft = value.speedLeft;
+        var speedRight = value.speedRight;
+
+        // Exec for all directions
+        var cmd = "/home/debian/mr_robot/tools/control/write " + speedLeft + "," + speedRight + "#";
+        console.log("Executing: " + cmd);
+        exec(cmd,{silent:true});
+
+       console.log("Recieved:");
+       console.log(value);
+       console.log("-------------");
+    });
+
+    socket.on("car-ocv", function(value) {
+        var stat = value.status;
+        var device = value.device;
+        var color = value.color;
+
+        if(stat == "start") {
+            var cmd = "/home/debian/mr_robot/host/cv/OCV " + device + " " + color;
+            console.log("Executing: " + cmd);
+            exec(cmd,{silent:true});
+        } else if(stat == "stop") {
+            var cmd = "kill -9 $(ps -edf | grep 'OCV " + device + " " + color + "' | grep -v grep | awk '{print$2}');";
+			cmd += " /home/debian/mr_robot/tools/control/write 0,0#";
+            console.log("Executing: " + cmd);
+            exec(cmd,{silent:true});
+        }
+
+       console.log("Recieved:");
+       console.log(value);
+       console.log("-------------");
     });
 
     socket.on("disconnect", function(){

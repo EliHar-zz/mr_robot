@@ -1,0 +1,23 @@
+@import "../../../styles";
+
+.tracker-button {
+  padding: 10px;
+}
+
+.images {
+  padding-top: 40px;
+}
+
+.disconnected {
+  margin-top: ($window_height - $status_height) / 4;
+}
+.error-icon {
+  font-size: $large_text * 2;
+}
+.message {
+  font-size: $medium_text;
+}
+
+.no-started {
+  margin-top: ($window_height - $status_height) / 3;
+}
